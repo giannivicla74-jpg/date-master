@@ -1,5 +1,5 @@
 // Date Master Service Worker - GC CodeLab
-const CACHE_NAME = 'date-master-pwa-v1.6.0';
+const CACHE_NAME = 'date-master-pwa-v1.7.0';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -7,7 +7,8 @@ const ASSETS_TO_CACHE = [
   './icon-192.png',
   './icon-512.png',
   './favicon.png',
-  './Logo.jfif'
+  './logo-brand.png',
+  './logo-brand.jpg'
 ];
 
 self.addEventListener('install', (event) => {

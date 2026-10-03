@@ -1392,22 +1392,22 @@
 
     .aurora-logo-glow {
       position: absolute;
-      inset: -12px;
-      border-radius: 32px;
+      inset: -10px;
+      border-radius: 26px;
       background: linear-gradient(135deg, #22d3ee, #6366f1, #10b981);
       opacity: 0.9;
-      filter: blur(18px);
+      filter: blur(16px);
       animation: aurora-pulse-glow 4s ease-in-out infinite;
     }
 
     .aurora-logo-box {
       position: relative;
-      width: 340px;
-      height: 210px;
+      width: 360px;
+      height: 205px;
       border-radius: 20px;
-      background: #0a1020;
-      border: 2px solid rgba(103, 232, 249, 0.5);
-      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.9), 0 0 50px rgba(6, 182, 212, 0.28);
+      background: #090e18;
+      border: 2px solid rgba(103, 232, 249, 0.55);
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.9), 0 0 45px rgba(6, 182, 212, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -1417,9 +1417,9 @@
 
     @media (max-width: 640px) {
       .aurora-logo-box {
-        width: 92vw;
-        max-width: 320px;
-        height: 170px;
+        width: 90vw;
+        max-width: 340px;
+        height: 190px;
         border-radius: 16px;
       }
     }
@@ -1430,7 +1430,7 @@
       object-fit: cover;
       object-position: center;
       display: block;
-      filter: brightness(1.05) contrast(1.05);
+      filter: brightness(1.03) contrast(1.05);
     }
 
     .aurora-app-title {
@@ -1688,7 +1688,7 @@
         <div class="aurora-logo-wrapper">
           <div class="aurora-logo-glow"></div>
           <div class="aurora-logo-box">
-            <img src="logo-brand.png" alt="GC CodeLab Logo" class="aurora-logo-img">
+            <img src="logo-brand.png?v=1.7" alt="GC CodeLab Logo" class="aurora-logo-img">
           </div>
         </div>
 
@@ -3127,6 +3127,7 @@
     if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
       window.addEventListener('load', () => {
         navigator.serviceWorker.register('sw.js').then((reg) => {
+          reg.update();
           console.log('Date Master PWA Service Worker pronto:', reg.scope);
         }).catch((err) => {
           console.warn('Date Master PWA Service Worker error:', err);
