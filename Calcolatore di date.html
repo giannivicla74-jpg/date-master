@@ -1392,34 +1392,43 @@
 
     .aurora-logo-glow {
       position: absolute;
-      inset: -6px;
-      border-radius: 20px;
+      inset: -12px;
+      border-radius: 32px;
       background: linear-gradient(135deg, #22d3ee, #6366f1, #10b981);
-      opacity: 0.85;
-      filter: blur(10px);
+      opacity: 0.9;
+      filter: blur(18px);
       animation: aurora-pulse-glow 4s ease-in-out infinite;
     }
 
     .aurora-logo-box {
       position: relative;
-      width: 72px;
-      height: 72px;
-      border-radius: 18px;
+      width: 140px;
+      height: 140px;
+      border-radius: 30px;
       background: linear-gradient(145deg, #1e293b, #090d16);
-      border: 1px solid rgba(103, 232, 249, 0.45);
-      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8);
+      border: 2px solid rgba(103, 232, 249, 0.55);
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.9), 0 0 40px rgba(6, 182, 212, 0.3);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 6px;
+      padding: 10px;
       overflow: hidden;
+    }
+
+    @media (max-width: 640px) {
+      .aurora-logo-box {
+        width: 110px;
+        height: 110px;
+        border-radius: 24px;
+        padding: 8px;
+      }
     }
 
     .aurora-logo-img {
       width: 100%;
       height: 100%;
       object-fit: contain;
-      filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.75));
+      filter: drop-shadow(0 0 18px rgba(6, 182, 212, 0.85)) drop-shadow(0 0 6px rgba(255, 255, 255, 0.25));
     }
 
     .aurora-app-title {
