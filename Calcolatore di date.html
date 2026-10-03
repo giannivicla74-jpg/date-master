@@ -1,0 +1,2607 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Date Master di GC CodeLab - Calcolatore avanzato di date, intervalli temporali, giorni lavorativi, festività, età esatta e pietre miliari della vita.">
+  <title>Date Master PWA - GC CodeLab</title>
+  <meta name="theme-color" content="#0f172a">
+  
+  <!-- Favicon e Icone PWA generate da Logo.jfif -->
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
+
+  <!-- Web App Manifest Ufficiale PWA -->
+  <link rel="manifest" href="manifest.json">
+
+  <!-- Inizializzazione immediata tema anti-flicker -->
+  <script>
+    (function() {
+      try {
+        const saved = localStorage.getItem('datemaster_theme');
+        if (saved === 'light') {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      } catch (e) {}
+    })();
+  </script>
+
+  <style>
+    :root {
+      --bg-color: #0b1120;
+      --card-bg: #1e293b;
+      --card-inner: #0f172a;
+      --accent: #38bdf8;
+      --accent-hover: #0284c7;
+      --accent-subtle: rgba(56, 189, 248, 0.12);
+      --accent-border: rgba(56, 189, 248, 0.3);
+      --text: #f8fafc;
+      --text-muted: #94a3b8;
+      --border: #334155;
+      --success: #34d399;
+      --warning: #fbbf24;
+      --danger: #f87171;
+      --purple: #c084fc;
+      --purple-subtle: rgba(192, 132, 252, 0.12);
+      --purple-border: rgba(192, 132, 252, 0.3);
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: var(--font-sans);
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px 16px;
+      line-height: 1.5;
+    }
+
+    .app-container {
+      background-color: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 26px;
+      width: 100%;
+      max-width: 500px;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .app-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #0284c7, #38bdf8, #c084fc);
+    }
+
+    .brand-header {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .brand-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      text-transform: uppercase;
+      background: var(--accent-subtle);
+      border: 1px solid var(--accent-border);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: var(--text);
+    }
+
+    .brand-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+    }
+
+    .brand-app-logo {
+      width: 42px;
+      height: 42px;
+      border-radius: 11px;
+      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
+      object-fit: cover;
+      border: 1px solid var(--accent-border);
+    }
+
+    .badge-logo-img {
+      width: 14px;
+      height: 14px;
+      border-radius: 3px;
+      object-fit: cover;
+    }
+
+    .btn-pwa-install {
+      display: none;
+      margin: 10px auto 0 auto;
+      background: linear-gradient(135deg, #0284c7, #38bdf8);
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 0.78rem;
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      align-items: center;
+      gap: 6px;
+      box-shadow: 0 4px 12px rgba(56, 189, 248, 0.35);
+      transition: all 0.2s ease;
+      animation: pulseInstall 2.5s infinite;
+    }
+
+    .btn-pwa-install:hover {
+      transform: translateY(-1px) scale(1.03);
+      box-shadow: 0 6px 16px rgba(56, 189, 248, 0.45);
+    }
+
+    @keyframes pulseInstall {
+      0%, 100% { box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3); }
+      50% { box-shadow: 0 6px 18px rgba(192, 132, 252, 0.5); }
+    }
+
+    /* Tab Navigation a 3 schede */
+    .nav-tabs {
+      display: flex;
+      background-color: var(--card-inner);
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 22px;
+      border: 1px solid var(--border);
+      gap: 4px;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 9px 8px;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.82rem;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      color: var(--text);
+    }
+
+    .tab-btn.active {
+      background-color: var(--card-bg);
+      color: var(--accent);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    }
+
+    .tab-btn:focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: -2px;
+    }
+
+    .tab-content {
+      display: none;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .input-with-action {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .btn-today {
+      background: var(--accent-subtle);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      font-size: 0.78rem;
+      font-weight: 600;
+      padding: 0 12px;
+      height: 44px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+      white-space: nowrap;
+    }
+
+    .btn-today:hover {
+      background: var(--accent);
+      color: var(--card-inner);
+    }
+
+    .btn-today.purple {
+      background: var(--purple-subtle);
+      border-color: var(--purple-border);
+      color: var(--purple);
+    }
+
+    .btn-today.purple:hover {
+      background: var(--purple);
+      color: var(--card-inner);
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+
+    input[type="date"],
+    input[type="number"] {
+      width: 100%;
+      height: 44px;
+      padding: 0 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background-color: var(--card-inner);
+      color: var(--text);
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+      color-scheme: dark;
+    }
+
+    input[type="date"] {
+      cursor: text;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator {
+      cursor: pointer;
+      border-radius: 6px;
+      padding: 6px;
+      margin-right: -2px;
+      filter: invert(0.8) sepia(100%) saturate(1000%) hue-rotate(170deg);
+      opacity: 0.9;
+      transition: all 0.2s;
+    }
+
+    input[type="date"]::-webkit-calendar-picker-indicator:hover {
+      background-color: var(--accent-subtle);
+      opacity: 1;
+      transform: scale(1.12);
+    }
+
+    input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+    }
+
+    /* Toggles Stack */
+    .toggles-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 12px 0 16px 0;
+    }
+
+    .toggle-container {
+      background-color: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px 14px;
+      transition: all 0.25s ease;
+    }
+
+    .toggle-container.active {
+      border-color: var(--accent);
+      background-color: rgba(56, 189, 248, 0.05);
+      box-shadow: 0 0 0 1px var(--accent-border);
+    }
+
+    .toggle-container.active-purple {
+      border-color: var(--purple);
+      background-color: rgba(192, 132, 252, 0.05);
+      box-shadow: 0 0 0 1px var(--purple-border);
+    }
+
+    .switch-label {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      gap: 12px;
+    }
+
+    .switch-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .switch-title {
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .switch-title .badge-pill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      background: var(--accent-subtle);
+      color: var(--accent);
+      border: 1px solid var(--accent-border);
+    }
+
+    .switch-title .badge-purple {
+      font-size: 0.68rem;
+      font-weight: 700;
+      padding: 2px 7px;
+      border-radius: 20px;
+      background: var(--purple-subtle);
+      color: var(--purple);
+      border: 1px solid var(--purple-border);
+    }
+
+    .switch-subtitle {
+      font-size: 0.73rem;
+      color: var(--text-muted);
+      margin-top: 1px;
+    }
+
+    .switch-wrapper {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      flex-shrink: 0;
+    }
+
+    .switch-wrapper input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
+    .switch-slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: var(--border);
+      transition: 0.25s;
+      border-radius: 24px;
+    }
+
+    .switch-slider:before {
+      position: absolute;
+      content: "";
+      height: 18px;
+      width: 18px;
+      left: 3px;
+      bottom: 3px;
+      background-color: #fff;
+      transition: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      border-radius: 50%;
+    }
+
+    .switch-wrapper input:checked + .switch-slider {
+      background-color: var(--accent);
+    }
+
+    .switch-wrapper input.purple-slider:checked + .switch-slider {
+      background-color: var(--purple);
+    }
+
+    .switch-wrapper input:checked + .switch-slider:before {
+      transform: translateX(20px);
+      background-color: #0f172a;
+    }
+
+    /* Quick Shortcuts */
+    .quick-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .tag-btn {
+      background-color: var(--accent-subtle);
+      border: 1px solid var(--accent-border);
+      color: var(--accent);
+      padding: 6px 11px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.18s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tag-btn:hover {
+      background-color: var(--accent);
+      color: var(--card-inner);
+      transform: translateY(-1px);
+    }
+
+    .tag-btn:active {
+      transform: translateY(0);
+    }
+
+    /* Buttons */
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .btn-main {
+      flex: 1;
+      height: 46px;
+      padding: 0 16px;
+      border: none;
+      border-radius: 10px;
+      background-color: var(--accent);
+      color: #0f172a;
+      font-weight: 700;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-main:hover {
+      background-color: #7dd3fc;
+      box-shadow: 0 6px 16px rgba(56, 189, 248, 0.3);
+      transform: translateY(-1px);
+    }
+
+    .btn-main.purple-main {
+      background-color: var(--purple);
+    }
+
+    .btn-main.purple-main:hover {
+      background-color: #d8b4fe;
+      box-shadow: 0 6px 16px rgba(192, 132, 252, 0.3);
+    }
+
+    .btn-main:active {
+      transform: translateY(0);
+    }
+
+    .btn-main.secondary {
+      background-color: transparent;
+      border: 1px solid var(--border);
+      color: var(--text);
+    }
+
+    .btn-main.secondary:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background-color: var(--accent-subtle);
+      box-shadow: none;
+    }
+
+    /* Reset Button */
+    .btn-reset {
+      height: 46px;
+      padding: 0 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background-color: transparent;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+    }
+
+    .btn-reset:hover {
+      border-color: var(--danger);
+      color: var(--danger);
+      background-color: rgba(248, 113, 113, 0.08);
+      transform: translateY(-1px);
+    }
+
+    .btn-reset:active {
+      transform: translateY(0);
+    }
+
+    .btn-reset-link {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 0.76rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 7px;
+      border-radius: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-reset-link:hover {
+      color: var(--danger);
+      background: rgba(248, 113, 113, 0.1);
+    }
+
+    /* Divider e Swap buttons */
+    .swap-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: -6px 0 10px 0;
+    }
+
+    .swap-divider-calc {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      margin: -6px 0 8px 0;
+    }
+
+    .btn-swap {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+
+    .btn-swap:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      transform: rotate(180deg);
+    }
+
+    /* Result Box */
+    .result-box {
+      margin-top: 22px;
+      padding: 18px;
+      background-color: var(--card-inner);
+      border-radius: 14px;
+      border-left: 4px solid var(--accent);
+      border-top: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      animation: fadeIn 0.25s ease-out;
+      position: relative;
+    }
+
+    .result-box.purple-theme {
+      border-left-color: var(--purple);
+    }
+
+    .result-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .result-title {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .btn-copy {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+    }
+
+    .btn-copy:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      background: var(--accent-subtle);
+    }
+
+    .btn-copy.copied {
+      color: var(--success);
+      border-color: var(--success);
+      background: rgba(52, 211, 153, 0.1);
+    }
+
+    .result-date {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #fff;
+      margin: 4px 0 8px 0;
+      text-transform: capitalize;
+      line-height: 1.35;
+    }
+
+    .info-pills {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 12px;
+    }
+
+    .pill {
+      background-color: var(--card-bg);
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+      border: 1px solid var(--border);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .pill strong {
+      color: var(--text);
+    }
+
+    .pill.highlight {
+      border-color: var(--accent-border);
+      color: var(--accent);
+      background-color: var(--accent-subtle);
+    }
+
+    .pill.purple {
+      border-color: var(--purple-border);
+      color: var(--purple);
+      background-color: var(--purple-subtle);
+    }
+
+    .pill.success {
+      border-color: rgba(52, 211, 153, 0.3);
+      color: var(--success);
+      background-color: rgba(52, 211, 153, 0.1);
+    }
+
+    .pill.warning {
+      border-color: rgba(251, 191, 36, 0.3);
+      color: var(--warning);
+      background-color: rgba(251, 191, 36, 0.1);
+    }
+
+    /* Footer */
+    .app-footer {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid var(--border);
+      text-align: center;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .app-footer .developer {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    .app-footer .status {
+      color: var(--accent);
+      font-weight: 500;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background-color: var(--success);
+      display: inline-block;
+      box-shadow: 0 0 6px var(--success);
+    }
+
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%) translateY(100px);
+      background: #1e293b;
+      color: var(--text);
+      border: 1px solid var(--accent);
+      padding: 10px 18px;
+      border-radius: 30px;
+      font-size: 0.85rem;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+      opacity: 0;
+      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      z-index: 100;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .toast.show {
+      transform: translateX(-50%) translateY(0);
+      opacity: 1;
+    }
+
+    /* --- Dettaglio Festività nell'Intervallo --- */
+    .holidays-card {
+      margin-top: 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .holidays-card.empty {
+      background: transparent;
+      border: 1px dashed var(--border);
+      padding: 9px 12px;
+    }
+
+    .holidays-empty-label {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      font-size: 0.76rem;
+      color: var(--text-muted);
+    }
+
+    .holidays-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: rgba(251, 191, 36, 0.08);
+      border-bottom: 1px solid rgba(251, 191, 36, 0.2);
+      font-size: 0.82rem;
+      color: var(--warning);
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+      gap: 8px;
+    }
+
+    .holidays-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .holidays-summary:hover {
+      background: rgba(251, 191, 36, 0.14);
+    }
+
+    .holidays-summary-left {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .holidays-summary-right {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .holidays-count-badge {
+      background: rgba(251, 191, 36, 0.2);
+      color: var(--warning);
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .chevron-icon {
+      transition: transform 0.22s ease;
+      color: var(--warning);
+    }
+
+    details[open] .chevron-icon {
+      transform: rotate(180deg);
+    }
+
+    .holidays-list {
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      max-height: 220px;
+      overflow-y: auto;
+    }
+
+    .holiday-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 10px;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      gap: 8px;
+    }
+
+    .holiday-left {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      min-width: 0;
+    }
+
+    .holiday-date-badge {
+      font-weight: 700;
+      color: var(--accent);
+      background: var(--accent-subtle);
+      border: 1px solid var(--accent-border);
+      padding: 3px 7px;
+      border-radius: 6px;
+      font-size: 0.72rem;
+      white-space: nowrap;
+      text-transform: capitalize;
+    }
+
+    .holiday-info {
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    .holiday-name {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .holiday-weekday {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      text-transform: capitalize;
+    }
+
+    .holiday-right {
+      flex-shrink: 0;
+    }
+
+    .holiday-badge {
+      font-size: 0.7rem;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    .holiday-badge.weekday {
+      background: rgba(52, 211, 153, 0.12);
+      color: var(--success);
+      border: 1px solid rgba(52, 211, 153, 0.25);
+    }
+
+    .holiday-badge.weekend {
+      background: rgba(251, 191, 36, 0.12);
+      color: var(--warning);
+      border: 1px solid rgba(251, 191, 36, 0.25);
+    }
+
+    /* --- Scheda Informativa Spiegazioni (Età & Milestone) --- */
+    .info-card-purple {
+      margin-top: 14px;
+      background: var(--card-bg);
+      border: 1px solid var(--purple-border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.2s ease;
+    }
+
+    .info-card-summary {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 14px;
+      background: var(--purple-subtle);
+      border-bottom: 1px solid var(--purple-border);
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--purple);
+      cursor: pointer;
+      user-select: none;
+      list-style: none;
+    }
+
+    .info-card-summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .info-card-summary:hover {
+      background: rgba(192, 132, 252, 0.18);
+    }
+
+    .info-card-title {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .info-card-purple .chevron-icon {
+      color: var(--purple);
+    }
+
+    .info-card-body {
+      padding: 12px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .info-card-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.78rem;
+      line-height: 1.45;
+      color: var(--text-muted);
+    }
+
+    .info-card-item strong {
+      color: var(--text);
+      display: block;
+      margin-bottom: 2px;
+    }
+
+    .info-card-item .info-icon {
+      font-size: 1.1rem;
+      line-height: 1;
+      padding-top: 2px;
+    }
+
+    /* --- Pulsante Selettore Tema --- */
+    .btn-theme-toggle {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--border);
+      background: var(--card-inner);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      z-index: 10;
+    }
+
+    .btn-theme-toggle:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      transform: scale(1.08) rotate(15deg);
+      background: var(--card-bg);
+    }
+
+    .theme-icon-sun {
+      display: block;
+    }
+
+    .theme-icon-moon {
+      display: none;
+    }
+
+    /* --- Tema Chiaro (Light Mode) --- */
+    [data-theme="light"] {
+      --bg-color: #f1f5f9;
+      --card-bg: #ffffff;
+      --card-inner: #f8fafc;
+      --accent: #0284c7;
+      --accent-hover: #0369a1;
+      --accent-subtle: rgba(2, 132, 199, 0.09);
+      --accent-border: rgba(2, 132, 199, 0.25);
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --success: #059669;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --purple: #7c3aed;
+      --purple-subtle: rgba(124, 58, 237, 0.09);
+      --purple-border: rgba(124, 58, 237, 0.25);
+    }
+
+    [data-theme="light"] .app-container {
+      box-shadow: 0 20px 45px -12px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
+    }
+
+    [data-theme="light"] .theme-icon-sun {
+      display: none;
+    }
+
+    [data-theme="light"] .theme-icon-moon {
+      display: block;
+    }
+
+    [data-theme="light"] .btn-theme-toggle:hover {
+      color: var(--purple);
+      border-color: var(--purple);
+    }
+
+    [data-theme="light"] input[type="date"],
+    [data-theme="light"] input[type="number"] {
+      color-scheme: light;
+      background-color: #ffffff;
+      border-color: #cbd5e1;
+    }
+
+    [data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator {
+      filter: invert(0.35) sepia(100%) saturate(1000%) hue-rotate(170deg);
+    }
+
+    [data-theme="light"] .btn-main {
+      color: #ffffff;
+    }
+
+    [data-theme="light"] .btn-main.purple-main {
+      color: #ffffff;
+    }
+
+    [data-theme="light"] .btn-main.secondary {
+      background-color: #ffffff;
+      color: var(--text);
+      border-color: var(--border);
+    }
+
+    [data-theme="light"] .btn-main.secondary:hover {
+      background-color: var(--accent-subtle);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    [data-theme="light"] .btn-swap {
+      background-color: #ffffff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+
+    [data-theme="light"] .result-date {
+      color: var(--text);
+    }
+
+    [data-theme="light"] .switch-slider:before {
+      background-color: #ffffff;
+    }
+
+    [data-theme="light"] .switch-wrapper input:checked + .switch-slider:before {
+      background-color: #ffffff;
+    }
+
+    [data-theme="light"] .toast {
+      background-color: #ffffff;
+      color: var(--text);
+      border-color: var(--border);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.12);
+    }
+
+    @media (max-width: 440px) {
+      .app-container {
+        padding: 20px 14px;
+      }
+      .btn-theme-toggle {
+        top: 15px;
+        right: 15px;
+        width: 34px;
+        height: 34px;
+      }
+      .nav-tabs {
+        padding: 3px;
+        gap: 2px;
+      }
+      .tab-btn {
+        padding: 8px 4px;
+        font-size: 0.72rem;
+        gap: 3px;
+      }
+      .tab-btn svg {
+        width: 13px;
+        height: 13px;
+      }
+      .grid-3 {
+        gap: 6px;
+      }
+      .btn-group {
+        flex-wrap: wrap;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <main class="app-container" role="main">
+    <!-- Selettore Tema Chiaro / Scuro -->
+    <button type="button" class="btn-theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Cambia tema chiaro o scuro" title="Passa a tema chiaro/scuro">
+      <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"></circle>
+        <line x1="12" y1="1" x2="12" y2="3"></line>
+        <line x1="12" y1="21" x2="12" y2="23"></line>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+        <line x1="1" y1="12" x2="3" y2="12"></line>
+        <line x1="21" y1="12" x2="23" y2="12"></line>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+      </svg>
+      <svg class="theme-icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+      </svg>
+    </button>
+
+    <header class="brand-header">
+      <div class="brand-badge">
+        <img src="favicon.png" alt="Logo" class="badge-logo-img">
+        GC CodeLab
+      </div>
+      <div class="brand-title-row">
+        <img src="icon-192.png" alt="Date Master Logo" class="brand-app-logo">
+        <h1>Date Master</h1>
+      </div>
+      <!-- Tasto Installa PWA se supportato dal browser -->
+      <button type="button" class="btn-pwa-install" id="pwaInstallBtn" onclick="installPWA()" title="Installa come app sul tuo dispositivo">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Installa App</span>
+      </button>
+    </header>
+
+    <!-- Navigation Tabs: 3 Schede complete -->
+    <nav class="nav-tabs" role="tablist" aria-label="Modalità di calcolo">
+      <button class="tab-btn active" id="tab-btn-calc" role="tab" aria-selected="true" aria-controls="tab-calc" onclick="switchTab('calc')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+        Aggiungi/Sottrai
+      </button>
+      <button class="tab-btn" id="tab-btn-diff" role="tab" aria-selected="false" aria-controls="tab-diff" onclick="switchTab('diff')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="m10 15 5-3-5-3v6z"/></svg>
+        Differenza
+      </button>
+      <button class="tab-btn" id="tab-btn-age" role="tab" aria-selected="false" aria-controls="tab-age" onclick="switchTab('age')">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+        Età & Milestone
+      </button>
+    </nav>
+
+    <!-- TAB 1: Calcola Data (Aggiungi/Sottrai) -->
+    <section id="tab-calc" class="tab-content active" role="tabpanel" aria-labelledby="tab-btn-calc">
+      <div class="form-group">
+        <div class="label-row">
+          <label for="startDate">Data di Partenza</label>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">Tastiera o Calendario 📅</span>
+        </div>
+        <div class="input-with-action">
+          <input type="date" id="startDate" aria-label="Data di partenza" oninput="onStartDateChange()" onchange="onStartDateChange()">
+          <button type="button" class="btn-today" onclick="setStartDateToday()" title="Imposta alla data odierna">Oggi</button>
+        </div>
+      </div>
+
+      <!-- Tasto Rapido Scambia Date nel Tab 1 -->
+      <div class="swap-divider-calc">
+        <button type="button" class="btn-swap" onclick="swapCalcDates()" title="Inverti Data di Partenza e Data Fine">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4m0 0L3 8m4-4 4 4M17 8v12m0 0 4-4m-4 4-4-4"/></svg>
+        </button>
+      </div>
+
+      <!-- Data Fine Diretta nel Tab 1 -->
+      <div class="form-group">
+        <div class="label-row">
+          <label for="calcEndDate">Data Fine</label>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">Tastiera o Calendario 📅</span>
+        </div>
+        <div class="input-with-action">
+          <input type="date" id="calcEndDate" aria-label="Data fine" oninput="onCalcEndDateChange()" onchange="onCalcEndDateChange()">
+          <button type="button" class="btn-today" onclick="setCalcEndDateToday()" title="Imposta data fine ad oggi">Oggi</button>
+        </div>
+      </div>
+
+      <!-- Gruppo Opzioni (Solo Giorni Lavorativi + Includi Entrambi gli Estremi) -->
+      <div class="toggles-stack">
+        <!-- Toggle Giorni Lavorativi -->
+        <div class="toggle-container" id="workdaysToggleContainer">
+          <label class="switch-label" for="workdaysOnly">
+            <div class="switch-text">
+              <span class="switch-title">
+                💼 Solo Giorni Lavorativi
+                <span class="badge-pill">Feriali</span>
+              </span>
+              <span class="switch-subtitle">Salta sabati, domeniche e festività italiane</span>
+            </div>
+            <div class="switch-wrapper">
+              <input type="checkbox" id="workdaysOnly" role="switch" aria-checked="false" onchange="toggleWorkdaysMode()">
+              <span class="switch-slider"></span>
+            </div>
+          </label>
+        </div>
+
+        <!-- Toggle Includi Estremi -->
+        <div class="toggle-container" id="inclusiveToggleContainer">
+          <label class="switch-label" for="inclusiveDates">
+            <div class="switch-text">
+              <span class="switch-title">
+                📅 Includi Entrambi gli Estremi
+                <span class="badge-purple">+1 giorno</span>
+              </span>
+              <span class="switch-subtitle">Conta sia data inizio che data fine (es. 1-30 set = 30 gg)</span>
+            </div>
+            <div class="switch-wrapper">
+              <input type="checkbox" id="inclusiveDates" class="purple-slider" role="switch" aria-checked="false" onchange="toggleInclusiveMode()">
+              <span class="switch-slider"></span>
+            </div>
+          </label>
+        </div>
+      </div>
+
+      <!-- Intervallo Numerico con tasto Azzera nell'intestazione -->
+      <div class="form-group" style="margin-top: 14px;">
+        <div class="label-row">
+          <label id="intervalLabel">Intervallo (giorni, mesi, anni)</label>
+          <button type="button" class="btn-reset-link" onclick="resetInterval()" title="Azzera valori intervallo">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            Azzera valori
+          </button>
+        </div>
+        <div class="grid-3">
+          <div>
+            <label for="daysToAdd" id="daysInputLabel" style="font-size: 0.75rem; margin-bottom: 4px;">Giorni</label>
+            <input type="number" id="daysToAdd" value="15" min="0" oninput="onIntervalInputChange()">
+          </div>
+          <div>
+            <label for="monthsToAdd" id="monthsInputLabel" style="font-size: 0.75rem; margin-bottom: 4px;">Mesi</label>
+            <input type="number" id="monthsToAdd" value="0" min="0" oninput="onIntervalInputChange()">
+          </div>
+          <div>
+            <label for="yearsToAdd" id="yearsInputLabel" style="font-size: 0.75rem; margin-bottom: 4px;">Anni</label>
+            <input type="number" id="yearsToAdd" value="0" min="0" oninput="onIntervalInputChange()">
+          </div>
+        </div>
+
+        <!-- Scorciatoie Rapide Dinamiche -->
+        <div class="quick-tags" id="quickTagsContainer" role="group" aria-label="Scorciatoie rapide intervallo">
+          <!-- Popolate via JS -->
+        </div>
+      </div>
+
+      <!-- Gruppo Pulsanti con Reset -->
+      <div class="btn-group">
+        <button type="button" class="btn-main" id="btnAdd" onclick="calculateDate(1)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Aggiungi
+        </button>
+        <button type="button" class="btn-main secondary" id="btnSubtract" onclick="calculateDate(-1)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+          Sottrai
+        </button>
+        <button type="button" class="btn-reset" onclick="resetAllCalcFields()" title="Resetta tutti i campi di questa scheda ad oggi e zero">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Reset
+        </button>
+      </div>
+
+      <div class="result-box" id="calcResultBox" aria-live="polite">
+        <div class="result-header">
+          <span class="result-title">Data Risultante</span>
+          <button type="button" class="btn-copy" onclick="copyResult('calcResultDate', this)" title="Copia data negli appunti">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Copia</span>
+          </button>
+        </div>
+        <div class="result-date" id="calcResultDate">-</div>
+        <div class="info-pills" id="calcPills"></div>
+        <div id="calcHolidaysDetail"></div>
+      </div>
+    </section>
+
+    <!-- TAB 2: Differenza tra Date -->
+    <section id="tab-diff" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-diff">
+      <div class="form-group">
+        <div class="label-row">
+          <label for="diffDate1">Data Inizio</label>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">Tastiera o Calendario 📅</span>
+        </div>
+        <div class="input-with-action">
+          <input type="date" id="diffDate1" aria-label="Data iniziale" oninput="calculateDifference()" onchange="calculateDifference()">
+          <button type="button" class="btn-today" onclick="setDiffDateToday(1)" title="Imposta alla data odierna">Oggi</button>
+        </div>
+      </div>
+
+      <div class="swap-divider">
+        <button type="button" class="btn-swap" onclick="swapDates()" title="Scambia Data Inizio e Data Fine">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4m0 0L3 8m4-4 4 4M17 8v12m0 0 4-4m-4 4-4-4"/></svg>
+        </button>
+      </div>
+
+      <div class="form-group">
+        <div class="label-row">
+          <label for="diffDate2">Data Fine</label>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">Tastiera o Calendario 📅</span>
+        </div>
+        <div class="input-with-action">
+          <input type="date" id="diffDate2" aria-label="Data finale" oninput="calculateDifference()" onchange="calculateDifference()">
+          <button type="button" class="btn-today" onclick="setDiffDateToday(2)" title="Imposta alla data odierna">Oggi</button>
+        </div>
+      </div>
+
+      <!-- Toggle Includi Estremi nel Tab 2 -->
+      <div class="toggle-container" id="diffInclusiveToggleContainer" style="margin-top: 10px;">
+        <label class="switch-label" for="diffInclusiveDates">
+          <div class="switch-text">
+            <span class="switch-title">
+              📅 Includi Entrambi gli Estremi
+              <span class="badge-purple">+1 giorno</span>
+            </span>
+            <span class="switch-subtitle">Conta sia data inizio che data fine nel conteggio</span>
+          </div>
+          <div class="switch-wrapper">
+            <input type="checkbox" id="diffInclusiveDates" class="purple-slider" role="switch" aria-checked="false" onchange="calculateDifference()">
+            <span class="switch-slider"></span>
+          </div>
+        </label>
+      </div>
+
+      <div class="btn-group" style="margin-top: 14px;">
+        <button type="button" class="btn-main" style="flex: 2;" onclick="calculateDifference()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+          Calcola Differenza
+        </button>
+        <button type="button" class="btn-reset" onclick="resetDiffFields()" title="Reimposta date ad oggi">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Reset
+        </button>
+      </div>
+
+      <div class="result-box" id="diffResultBox" aria-live="polite">
+        <div class="result-header">
+          <span class="result-title">Distanza Temporale</span>
+          <button type="button" class="btn-copy" onclick="copyResult('diffResultMain', this)" title="Copia risultato negli appunti">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Copia</span>
+          </button>
+        </div>
+        <div class="result-date" id="diffResultMain">-</div>
+        <div class="info-pills" id="diffPills"></div>
+        <div id="diffHolidaysDetail"></div>
+      </div>
+    </section>
+
+    <!-- TAB 3: Calcolatore Età & Milestone -->
+    <section id="tab-age" class="tab-content" role="tabpanel" aria-labelledby="tab-btn-age">
+      <div class="form-group">
+        <div class="label-row">
+          <label for="birthDate">Data di Nascita</label>
+          <span style="font-size: 0.72rem; color: var(--purple);">Tastiera o Calendario 📅</span>
+        </div>
+        <div class="input-with-action">
+          <input type="date" id="birthDate" aria-label="Data di nascita" oninput="calculateAge()" onchange="calculateAge()">
+          <button type="button" class="btn-today purple" onclick="setBirthExample(1995)" title="Imposta anno 1995 di esempio">Es: 1995</button>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <div class="label-row">
+          <label for="ageRefDate">Calcola età al giorno (predefinito: Oggi)</label>
+          <span style="font-size: 0.72rem; color: var(--text-muted);">Tastiera o Calendario 📅</span>
+        </div>
+        <div class="input-with-action">
+          <input type="date" id="ageRefDate" aria-label="Data di riferimento per il calcolo dell'età" oninput="calculateAge()" onchange="calculateAge()">
+          <button type="button" class="btn-today" onclick="setAgeRefToday()" title="Imposta alla data odierna">Oggi</button>
+        </div>
+      </div>
+
+      <div class="btn-group" style="margin-top: 14px;">
+        <button type="button" class="btn-main purple-main" style="flex: 2;" onclick="calculateAge()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+          Calcola Età & Milestone
+        </button>
+        <button type="button" class="btn-reset" onclick="resetAgeFields()" title="Ripristina campi età">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+          Reset
+        </button>
+      </div>
+
+      <div class="result-box purple-theme" id="ageResultBox" aria-live="polite">
+        <div class="result-header">
+          <span class="result-title" style="color: var(--purple);">Età Esatta & Prossimo Compleanno</span>
+          <button type="button" class="btn-copy" onclick="copyResult('ageResultMain', this)" title="Copia età negli appunti">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+            <span>Copia</span>
+          </button>
+        </div>
+        <div class="result-date" id="ageResultMain">-</div>
+        <div class="info-pills" id="agePills"></div>
+
+        <!-- Spiegazione Curiosità & Milestone -->
+        <details class="info-card-purple">
+          <summary class="info-card-summary">
+            <div class="info-card-title">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+              <span>Cosa significano queste stime?</span>
+            </div>
+            <svg class="chevron-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </summary>
+          <div class="info-card-body">
+            <div class="info-card-item">
+              <span class="info-icon">🏆</span>
+              <div>
+                <strong>Traguardo 10k / 20k / 30k / 40k giorni</strong>
+                <span>Pietra miliare della vita calcolata in giorni solari invece che in anni (10.000 gg ≈ 27 anni e 4 mesi; 20.000 gg ≈ 54 anni e 9 mesi; 30.000 gg ≈ 82 anni e 1 mese). Indica quanti giorni mancano e la data esatta in cui festeggi questo speciale compleanno in giorni.</span>
+              </div>
+            </div>
+            <div class="info-card-item">
+              <span class="info-icon">💓</span>
+              <div>
+                <strong>Battiti cardiaci stimati</strong>
+                <span>Stima statistica del totale di battiti compiuti dal tuo cuore dalla nascita fino ad oggi, calcolata sulla frequenza cardiaca media umana a riposo di ~70 battiti al minuto (~100.800 battiti al giorno).</span>
+              </div>
+            </div>
+            <div class="info-card-item">
+              <span class="info-icon">🌬️</span>
+              <div>
+                <strong>Respiri stimati</strong>
+                <span>Stima del numero di atti respiratori (inalazioni ed esalazioni) compiuti nella vita, basata sulla frequenza respiratoria media a riposo di circa 16 respiri al minuto (~23.040 respiri al giorno).</span>
+              </div>
+            </div>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="app-footer">
+      <div><strong>GC CodeLab</strong> • <span class="developer">Sviluppato da Giovanni Cavallo</span></div>
+      <div><span class="status"><span class="status-dot"></span> v 1.4.0 Offline Standalone</span></div>
+    </footer>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+    <span id="toastMsg">Testo copiato!</span>
+  </div>
+
+  <script>
+    // --- Gestione Date Sicura (Evita problemi di Fuso Orario UTC) ---
+    function formatLocalDateToISO(date) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, '0');
+      const d = String(date.getDate()).padStart(2, '0');
+      return `${y}-${m}-${d}`;
+    }
+
+    function parseLocalDate(dateString) {
+      if (!dateString) return null;
+      const parts = dateString.split('-').map(Number);
+      if (parts.length !== 3 || parts.some(isNaN)) return null;
+      return new Date(parts[0], parts[1] - 1, parts[2], 12, 0, 0); // Mezzogiorno locale per neutralizzare DST
+    }
+
+    // Inizializzazione con la data locale del dispositivo
+    const today = new Date();
+    const todayISO = formatLocalDateToISO(today);
+
+    document.getElementById('startDate').value = todayISO;
+    document.getElementById('diffDate1').value = todayISO;
+    
+    // Per diffDate2 impostiamo di default oggi + 30 giorni
+    const nextMonth = new Date(today.getFullYear(), today.getMonth(), today.getDate() + 30);
+    document.getElementById('diffDate2').value = formatLocalDateToISO(nextMonth);
+
+    // Default per la nuova scheda Età (es. 15 Maggio 1995)
+    document.getElementById('birthDate').value = '1995-05-15';
+    document.getElementById('ageRefDate').value = todayISO;
+
+    let currentDirection = 1;
+
+    // --- Calcolo Festività Italiane con Nomi ---
+    function getEasterMonday(year) {
+      const a = year % 19;
+      const b = Math.floor(year / 100);
+      const c = year % 100;
+      const d = Math.floor(b / 4);
+      const e = b % 4;
+      const f = Math.floor((b + 8) / 25);
+      const g = Math.floor((b - f + 1) / 3);
+      const h = (19 * a + b - d - g + 15) % 30;
+      const i = Math.floor(c / 4);
+      const k = c % 4;
+      const l = (32 + 2 * e + 2 * i - h - k) % 7;
+      const m = Math.floor((a + 11 * h + 22 * l) / 451);
+      const month = Math.floor((h + l - 7 * m + 114) / 31);
+      const day = ((h + l - 7 * m + 114) % 31) + 1;
+      return new Date(year, month - 1, day + 1, 12, 0, 0); // Lunedì dell'Angelo
+    }
+
+    function getEasterSunday(year) {
+      const em = getEasterMonday(year);
+      return new Date(em.getFullYear(), em.getMonth(), em.getDate() - 1, 12, 0, 0);
+    }
+
+    function getItalianHolidayName(date) {
+      const y = date.getFullYear();
+      const m = date.getMonth() + 1;
+      const d = date.getDate();
+      const mmdd = `${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
+      const fixed = {
+        '01-01': 'Capodanno',
+        '01-06': 'Epifania',
+        '04-25': 'Liberazione',
+        '05-01': 'Festa dei Lavoratori',
+        '06-02': 'Festa della Repubblica',
+        '08-15': 'Ferragosto (Assunzione)',
+        '11-01': 'Tutti i Santi',
+        '12-08': 'Immacolata Concezione',
+        '12-25': 'Natale',
+        '12-26': 'Santo Stefano'
+      };
+
+      if (fixed[mmdd]) return fixed[mmdd];
+
+      const em = getEasterMonday(y);
+      if (em.getMonth() + 1 === m && em.getDate() === d) {
+        return "Lunedì dell'Angelo (Pasquetta)";
+      }
+
+      const es = getEasterSunday(y);
+      if (es.getMonth() + 1 === m && es.getDate() === d) {
+        return "Pasqua";
+      }
+
+      return null;
+    }
+
+    // Modalità Giorni Lavorativi
+    function toggleWorkdaysMode() {
+      const isChecked = document.getElementById('workdaysOnly').checked;
+      document.getElementById('workdaysOnly').setAttribute('aria-checked', isChecked);
+      document.getElementById('workdaysToggleContainer').classList.toggle('active', isChecked);
+      
+      const isInclusive = document.getElementById('inclusiveDates').checked;
+      const daysLabel = document.getElementById('daysInputLabel');
+      daysLabel.textContent = isChecked ? (isInclusive ? 'Giorni Lav. Compresi' : 'Giorni Lavorativi') : (isInclusive ? 'Giorni Compresi' : 'Giorni');
+      daysLabel.style.color = isChecked ? 'var(--accent)' : 'var(--text-muted)';
+
+      renderQuickTags(isChecked);
+
+      const sVal = document.getElementById('startDate').value;
+      const eVal = document.getElementById('calcEndDate').value;
+      if (sVal && eVal) {
+        onCalcEndDateChange();
+      } else {
+        calculateDate(currentDirection);
+      }
+
+      showToast(isChecked ? 'Modalità Giorni Lavorativi: conteggio aggiornato' : 'Modalità Giorni Solari: conteggio aggiornato');
+    }
+
+    // Modalità Inclusione Estremi (+1 giorno)
+    function toggleInclusiveMode() {
+      const isInclusive = document.getElementById('inclusiveDates').checked;
+      document.getElementById('inclusiveDates').setAttribute('aria-checked', isInclusive);
+      document.getElementById('inclusiveToggleContainer').classList.toggle('active-purple', isInclusive);
+
+      const isWorkdays = document.getElementById('workdaysOnly').checked;
+      const daysLabel = document.getElementById('daysInputLabel');
+      daysLabel.textContent = isWorkdays ? (isInclusive ? 'Giorni Lav. Compresi' : 'Giorni Lavorativi') : (isInclusive ? 'Giorni Compresi' : 'Giorni');
+
+      const sVal = document.getElementById('startDate').value;
+      const eVal = document.getElementById('calcEndDate').value;
+      if (sVal && eVal) {
+        onCalcEndDateChange();
+      } else {
+        calculateDate(currentDirection);
+      }
+
+      showToast(isInclusive ? 'Conteggio Inclusivo attivo (+1 giorno compreso)' : 'Conteggio Standard (distanza netta)');
+    }
+
+    function renderQuickTags(isWorkdays) {
+      const container = document.getElementById('quickTagsContainer');
+      if (isWorkdays) {
+        container.innerHTML = `
+          <button type="button" class="tag-btn" onclick="setQuick(5, 0, 0)">+5 gg (1 sett)</button>
+          <button type="button" class="tag-btn" onclick="setQuick(10, 0, 0)">+10 gg (2 sett)</button>
+          <button type="button" class="tag-btn" onclick="setQuick(15, 0, 0)">+15 gg (3 sett)</button>
+          <button type="button" class="tag-btn" onclick="setQuick(20, 0, 0)">+20 gg (4 sett)</button>
+          <button type="button" class="tag-btn" onclick="setQuick(30, 0, 0)">+30 gg lav</button>
+          <button type="button" class="tag-btn" onclick="setQuick(60, 0, 0)">+60 gg lav</button>
+        `;
+      } else {
+        container.innerHTML = `
+          <button type="button" class="tag-btn" onclick="setQuick(7, 0, 0)">+7 gg</button>
+          <button type="button" class="tag-btn" onclick="setQuick(14, 0, 0)">+14 gg</button>
+          <button type="button" class="tag-btn" onclick="setQuick(28, 0, 0)">+28 gg</button>
+          <button type="button" class="tag-btn" onclick="setQuick(30, 0, 0)">+30 gg</button>
+          <button type="button" class="tag-btn" onclick="setQuick(0, 1, 0)">+1 mese</button>
+          <button type="button" class="tag-btn" onclick="setQuick(0, 6, 0)">+6 mesi</button>
+          <button type="button" class="tag-btn" onclick="setQuick(0, 0, 1)">+1 anno</button>
+        `;
+      }
+    }
+
+    // Gestione Tab con accessibilità ARIA (3 schede)
+    function switchTab(tab) {
+      const tabs = ['calc', 'diff', 'age'];
+      tabs.forEach(t => {
+        const isActive = (t === tab);
+        const btn = document.getElementById(`tab-btn-${t}`);
+        const content = document.getElementById(`tab-${t}`);
+        if (btn) {
+          btn.classList.toggle('active', isActive);
+          btn.setAttribute('aria-selected', isActive);
+        }
+        if (content) {
+          content.classList.toggle('active', isActive);
+        }
+      });
+
+      if (tab === 'calc') {
+        calculateDate(currentDirection);
+      } else if (tab === 'diff') {
+        calculateDifference();
+      } else if (tab === 'age') {
+        calculateAge();
+      }
+    }
+
+    // Tasti Rapidi Scheda 1 e 2
+    function setStartDateToday() {
+      document.getElementById('startDate').value = formatLocalDateToISO(new Date());
+      calculateDate(currentDirection);
+      showToast('Data Partenza impostata a Oggi');
+    }
+
+    function setCalcEndDateToday() {
+      document.getElementById('calcEndDate').value = formatLocalDateToISO(new Date());
+      onCalcEndDateChange();
+      showToast('Data Fine impostata a Oggi');
+    }
+
+    function setDiffDateToday(num) {
+      document.getElementById(`diffDate${num}`).value = formatLocalDateToISO(new Date());
+      calculateDifference();
+      showToast(`Data ${num === 1 ? 'Inizio' : 'Fine'} impostata a Oggi`);
+    }
+
+    function swapCalcDates() {
+      const s = document.getElementById('startDate').value;
+      const e = document.getElementById('calcEndDate').value;
+      if (!s || !e) return;
+      document.getElementById('startDate').value = e;
+      document.getElementById('calcEndDate').value = s;
+      onCalcEndDateChange();
+      showToast('Date di Partenza e Fine scambiate');
+    }
+
+    function swapDates() {
+      const d1 = document.getElementById('diffDate1').value;
+      const d2 = document.getElementById('diffDate2').value;
+      document.getElementById('diffDate1').value = d2;
+      document.getElementById('diffDate2').value = d1;
+      calculateDifference();
+      showToast('Date invertite');
+    }
+
+    function setQuick(d, m, y) {
+      document.getElementById('daysToAdd').value = d;
+      document.getElementById('monthsToAdd').value = m;
+      document.getElementById('yearsToAdd').value = y;
+      calculateDate(1);
+    }
+
+    // Tasti Rapidi Scheda 3: Età
+    function setBirthExample(year) {
+      document.getElementById('birthDate').value = `${year}-05-15`;
+      calculateAge();
+      showToast(`Esempio data impostato (${year})`);
+    }
+
+    function setAgeRefToday() {
+      document.getElementById('ageRefDate').value = formatLocalDateToISO(new Date());
+      calculateAge();
+      showToast('Data di riferimento impostata a Oggi');
+    }
+
+    // Funzioni di Reset
+    function resetInterval() {
+      document.getElementById('daysToAdd').value = 0;
+      document.getElementById('monthsToAdd').value = 0;
+      document.getElementById('yearsToAdd').value = 0;
+      calculateDate(currentDirection);
+      showToast('Intervallo azzerato');
+    }
+
+    function resetAllCalcFields() {
+      const todayStr = formatLocalDateToISO(new Date());
+      document.getElementById('startDate').value = todayStr;
+      document.getElementById('calcEndDate').value = todayStr;
+      document.getElementById('daysToAdd').value = 0;
+      document.getElementById('monthsToAdd').value = 0;
+      document.getElementById('yearsToAdd').value = 0;
+      
+      const workdaysToggle = document.getElementById('workdaysOnly');
+      workdaysToggle.checked = false;
+      workdaysToggle.setAttribute('aria-checked', 'false');
+      document.getElementById('workdaysToggleContainer').classList.remove('active');
+
+      const inclusiveToggle = document.getElementById('inclusiveDates');
+      inclusiveToggle.checked = false;
+      inclusiveToggle.setAttribute('aria-checked', 'false');
+      document.getElementById('inclusiveToggleContainer').classList.remove('active-purple');
+
+      const daysLabel = document.getElementById('daysInputLabel');
+      daysLabel.textContent = 'Giorni';
+      daysLabel.style.color = 'var(--text-muted)';
+      renderQuickTags(false);
+      
+      calculateDate(1);
+      showToast('Tutti i campi ripristinati');
+    }
+
+    function resetDiffFields() {
+      const todayStr = formatLocalDateToISO(new Date());
+      document.getElementById('diffDate1').value = todayStr;
+      document.getElementById('diffDate2').value = todayStr;
+      
+      const diffIncl = document.getElementById('diffInclusiveDates');
+      if (diffIncl) {
+        diffIncl.checked = false;
+        diffIncl.setAttribute('aria-checked', 'false');
+        document.getElementById('diffInclusiveToggleContainer').classList.remove('active-purple');
+      }
+
+      calculateDifference();
+      showToast('Date ripristinate ad oggi');
+    }
+
+    function resetAgeFields() {
+      document.getElementById('birthDate').value = '1995-05-15';
+      document.getElementById('ageRefDate').value = formatLocalDateToISO(new Date());
+      calculateAge();
+      showToast('Campi età ripristinati');
+    }
+
+    // Numero settimana ISO 8601
+    function getWeekNumber(d) {
+      const target = new Date(d.valueOf());
+      const dayNr = (d.getDay() + 6) % 7;
+      target.setDate(target.getDate() - dayNr + 3);
+      const firstThursday = target.valueOf();
+      target.setMonth(0, 1);
+      if (target.getDay() !== 4) {
+        target.setMonth(0, 1 + ((4 - target.getDay()) + 7) % 7);
+      }
+      return 1 + Math.ceil((firstThursday - target) / 604800000);
+    }
+
+    // Giorno dell'anno (1 - 366)
+    function getDayOfYear(d) {
+      const start = new Date(d.getFullYear(), 0, 1);
+      const diff = d - start + 86400000;
+      return Math.floor(diff / 86400000);
+    }
+
+    // Motore Calcolo Giorni Lavorativi Step-by-Step
+    function stepWorkingDays(startDate, workingDaysCount, direction = 1) {
+      let cur = new Date(startDate.getTime());
+      let added = 0;
+      const target = Math.abs(workingDaysCount);
+      let weekendDaysSkipped = 0;
+      let holidaysSkipped = [];
+
+      const step = direction >= 0 ? 1 : -1;
+
+      while (added < target) {
+        cur.setDate(cur.getDate() + step);
+        const dayOfWeek = cur.getDay(); // 0 = Dom, 6 = Sab
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+          weekendDaysSkipped++;
+          continue;
+        }
+        const hName = getItalianHolidayName(cur);
+        if (hName) {
+          const formattedHoliday = `${hName} (${String(cur.getDate()).padStart(2, '0')}/${String(cur.getMonth() + 1).padStart(2, '0')})`;
+          if (!holidaysSkipped.includes(formattedHoliday)) {
+            holidaysSkipped.push(formattedHoliday);
+          }
+          continue;
+        }
+        added++;
+      }
+
+      return {
+        resultDate: cur,
+        weekendDaysSkipped,
+        holidaysSkipped
+      };
+    }
+
+    // Conteggio giorni lavorativi tra due date (supporta estremi inclusi)
+    function countWorkingDays(startDate, endDate, includeStart = false) {
+      let count = 0;
+      let cur = new Date(startDate.getTime());
+      const end = new Date(endDate.getTime());
+      
+      const step = (cur <= end) ? 1 : -1;
+      let holidaysFound = [];
+      let weekendDays = 0;
+
+      if (includeStart) {
+        const dayStart = cur.getDay();
+        if (dayStart === 0 || dayStart === 6) {
+          weekendDays++;
+        } else {
+          const hName = getItalianHolidayName(cur);
+          if (!hName) {
+            count++;
+          } else {
+            holidaysFound.push(hName);
+          }
+        }
+      }
+
+      while ((step === 1 && cur < end) || (step === -1 && cur > end)) {
+        cur.setDate(cur.getDate() + step);
+        const dayOfWeek = cur.getDay();
+        if (dayOfWeek === 0 || dayOfWeek === 6) {
+          weekendDays++;
+        } else {
+          const hName = getItalianHolidayName(cur);
+          if (!hName) {
+            count++;
+          } else {
+            holidaysFound.push(hName);
+          }
+        }
+      }
+      return { count, holidaysFound, weekendDays };
+    }
+
+    // --- Restituisce l'elenco cronologico dettagliato di tutte le festività nell'intervallo ---
+    function getHolidaysInInterval(date1, date2, isInclusive = true) {
+      if (!date1 || !date2) return [];
+
+      const earlier = (date1 <= date2) ? new Date(date1.getTime()) : new Date(date2.getTime());
+      const later = (date1 <= date2) ? new Date(date2.getTime()) : new Date(date1.getTime());
+
+      const holidays = [];
+      const cur = new Date(earlier.getTime());
+
+      if (!isInclusive) {
+        cur.setDate(cur.getDate() + 1);
+      }
+
+      const endLimit = new Date(later.getTime());
+      if (!isInclusive) {
+        endLimit.setDate(endLimit.getDate() - 1);
+      }
+
+      while (cur <= endLimit) {
+        const hName = getItalianHolidayName(cur);
+        if (hName) {
+          const dayOfWeek = cur.getDay(); // 0 = Dom, 6 = Sab
+          const isWeekend = (dayOfWeek === 0 || dayOfWeek === 6);
+          const weekdayName = cur.toLocaleDateString('it-IT', { weekday: 'long' });
+          const formattedDate = cur.toLocaleDateString('it-IT', { day: 'numeric', month: 'short', year: 'numeric' });
+          const isoDate = formatLocalDateToISO(cur);
+
+          holidays.push({
+            name: hName,
+            date: new Date(cur.getTime()),
+            iso: isoDate,
+            formatted: formattedDate,
+            weekday: weekdayName,
+            isWeekend: isWeekend
+          });
+        }
+        cur.setDate(cur.getDate() + 1);
+      }
+
+      return holidays;
+    }
+
+    // --- Renderizza la scheda Dettaglio Festività ---
+    function renderHolidaysDetail(containerId, holidays) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      if (!holidays || holidays.length === 0) {
+        container.innerHTML = `
+          <div class="holidays-card empty">
+            <div class="holidays-empty-label">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+              <span>Nessuna festività nazionale nell'intervallo</span>
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      const weekdayCount = holidays.filter(h => !h.isWeekend).length;
+      const weekendCount = holidays.filter(h => h.isWeekend).length;
+
+      let subtitleText = '';
+      if (weekdayCount > 0 && weekendCount > 0) {
+        subtitleText = `${weekdayCount} ferial${weekdayCount === 1 ? 'e' : 'i'}, ${weekendCount} weekend`;
+      } else if (weekdayCount > 0) {
+        subtitleText = `${weekdayCount} ferial${weekdayCount === 1 ? 'e' : 'i'} (ponte/lavorativo)`;
+      } else {
+        subtitleText = `${weekendCount} nel weekend (sab/dom)`;
+      }
+
+      const itemsHtml = holidays.map(h => `
+        <div class="holiday-item">
+          <div class="holiday-left">
+            <span class="holiday-date-badge">${h.formatted}</span>
+            <div class="holiday-info">
+              <div class="holiday-name">${h.name}</div>
+              <div class="holiday-weekday">${h.weekday.charAt(0).toUpperCase() + h.weekday.slice(1)}</div>
+            </div>
+          </div>
+          <div class="holiday-right">
+            <span class="holiday-badge ${h.isWeekend ? 'weekend' : 'weekday'}">
+              ${h.isWeekend ? '🏖️ Weekend' : '💼 Feriale'}
+            </span>
+          </div>
+        </div>
+      `).join('');
+
+      container.innerHTML = `
+        <details class="holidays-card" open>
+          <summary class="holidays-summary">
+            <div class="holidays-summary-left">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/><path d="M8 14h.01"/><path d="M12 14h.01"/><path d="M16 14h.01"/><path d="M8 18h.01"/><path d="M12 18h.01"/><path d="M16 18h.01"/></svg>
+              <span><strong>Festività nel periodo</strong> (${holidays.length})</span>
+            </div>
+            <div class="holidays-summary-right">
+              <span class="holidays-count-badge">${subtitleText}</span>
+              <svg class="chevron-icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+          </summary>
+          <div class="holidays-list">
+            ${itemsHtml}
+          </div>
+        </details>
+      `;
+    }
+
+    // Event handler: cambio Data Partenza
+    function onStartDateChange() {
+      calculateDate(currentDirection);
+    }
+
+    // Event handler: cambio Intervallo Numerico
+    function onIntervalInputChange() {
+      calculateDate(currentDirection);
+    }
+
+    // Event handler: Selezione diretta di Data Fine dal calendario in Tab 1
+    function onCalcEndDateChange() {
+      const sVal = document.getElementById('startDate').value;
+      const eVal = document.getElementById('calcEndDate').value;
+      if (!sVal || !eVal) return;
+
+      const startDate = parseLocalDate(sVal);
+      const endDate = parseLocalDate(eVal);
+      if (!startDate || !endDate) return;
+
+      const isWorkdaysMode = document.getElementById('workdaysOnly').checked;
+      const isInclusive = document.getElementById('inclusiveDates').checked;
+      const diffMs = endDate.getTime() - startDate.getTime();
+      const dir = (diffMs >= 0) ? 1 : -1;
+      currentDirection = dir;
+
+      document.getElementById('btnAdd').classList.toggle('secondary', dir !== 1);
+      document.getElementById('btnSubtract').classList.toggle('secondary', dir === 1);
+
+      if (isWorkdaysMode) {
+        const working = countWorkingDays(startDate, endDate, isInclusive);
+        document.getElementById('daysToAdd').value = working.count;
+        document.getElementById('monthsToAdd').value = 0;
+        document.getElementById('yearsToAdd').value = 0;
+      } else {
+        const absDiffDays = Math.round(Math.abs(diffMs) / 86400000);
+        const daysDisplay = isInclusive ? (absDiffDays + 1) : absDiffDays;
+        document.getElementById('daysToAdd').value = daysDisplay;
+        document.getElementById('monthsToAdd').value = 0;
+        document.getElementById('yearsToAdd').value = 0;
+      }
+
+      renderCalcResults(startDate, endDate, dir, isWorkdaysMode);
+    }
+
+    // --- TAB 1: Calcolo Aggiungi / Sottrai (aggiorna la Data Fine e i Risultati) ---
+    function calculateDate(direction = 1) {
+      currentDirection = direction;
+      const startVal = document.getElementById('startDate').value;
+      if (!startVal) return;
+
+      const baseDate = parseLocalDate(startVal);
+      if (!baseDate) return;
+
+      const rawDays = Math.abs(parseInt(document.getElementById('daysToAdd').value) || 0);
+      const months = Math.abs(parseInt(document.getElementById('monthsToAdd').value) || 0) * direction;
+      const years = Math.abs(parseInt(document.getElementById('yearsToAdd').value) || 0) * direction;
+      const isWorkdaysMode = document.getElementById('workdaysOnly').checked;
+      const isInclusive = document.getElementById('inclusiveDates').checked;
+
+      let effectiveDays = rawDays;
+      if (isInclusive && rawDays > 0) {
+        effectiveDays = rawDays - 1;
+      }
+
+      document.getElementById('btnAdd').classList.toggle('secondary', direction !== 1);
+      document.getElementById('btnSubtract').classList.toggle('secondary', direction === 1);
+
+      let targetYear = baseDate.getFullYear() + years;
+      let targetMonth = baseDate.getMonth() + months;
+      
+      const normalizedDate = new Date(targetYear, targetMonth, 1);
+      targetYear = normalizedDate.getFullYear();
+      targetMonth = normalizedDate.getMonth();
+
+      const maxDaysInTargetMonth = new Date(targetYear, targetMonth + 1, 0).getDate();
+      const targetDay = Math.min(baseDate.getDate(), maxDaysInTargetMonth);
+
+      const intermediateDate = new Date(targetYear, targetMonth, targetDay, 12, 0, 0);
+      let resDate;
+
+      if (isWorkdaysMode) {
+        const workdaysDetails = stepWorkingDays(intermediateDate, effectiveDays, direction);
+        resDate = workdaysDetails.resultDate;
+      } else {
+        resDate = new Date(intermediateDate.getTime());
+        resDate.setDate(resDate.getDate() + (effectiveDays * direction));
+      }
+
+      document.getElementById('calcEndDate').value = formatLocalDateToISO(resDate);
+
+      renderCalcResults(baseDate, resDate, direction, isWorkdaysMode);
+    }
+
+    // Renderizza il box dei risultati del Tab 1 con entrambi i conteggi sempre visibili
+    function renderCalcResults(baseDate, resDate, direction, isWorkdaysMode) {
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      const formatted = resDate.toLocaleDateString('it-IT', options);
+
+      document.getElementById('calcResultDate').innerText = formatted;
+
+      const weekNum = getWeekNumber(resDate);
+      const dayOfYear = getDayOfYear(resDate);
+      const isLeap = (resDate.getFullYear() % 4 === 0 && resDate.getFullYear() % 100 !== 0) || (resDate.getFullYear() % 400 === 0);
+      const isWeekend = (resDate.getDay() === 0 || resDate.getDay() === 6);
+      const holidayOnResult = getItalianHolidayName(resDate);
+
+      const isInclusive = document.getElementById('inclusiveDates').checked;
+      const totalSolarDays = Math.round(Math.abs(resDate.getTime() - baseDate.getTime()) / 86400000);
+      const inclusiveSolarDays = totalSolarDays + 1;
+
+      let pillsHtml = `
+        <span class="pill highlight"><strong>ISO:</strong> ${formatLocalDateToISO(resDate)}</span>
+        <span class="pill"><strong>Settimana:</strong> ${weekNum}</span>
+        <span class="pill"><strong>Giorno:</strong> ${dayOfYear}° dell'anno</span>
+      `;
+
+      if (isWorkdaysMode) {
+        const workingDataExcl = countWorkingDays(baseDate, resDate, false);
+        const workingDataIncl = countWorkingDays(baseDate, resDate, true);
+        
+        if (isInclusive) {
+          pillsHtml += `
+            <span class="pill success"><strong>💼 Lavorativi compresi:</strong> ${workingDataIncl.count} gg (${workingDataExcl.count} netti)</span>
+            <span class="pill purple"><strong>🗓️ Solari compresi:</strong> ${inclusiveSolarDays} gg (${totalSolarDays} netti)</span>
+            <span class="pill"><strong>🏖️ Weekend esclusi:</strong> ${workingDataIncl.weekendDays} gg</span>
+          `;
+        } else {
+          pillsHtml += `
+            <span class="pill success"><strong>💼 Lavorativi:</strong> ${workingDataExcl.count} gg (${workingDataIncl.count} compresi estremi)</span>
+            <span class="pill"><strong>🗓️ Solari trascorsi:</strong> ${totalSolarDays} gg (${inclusiveSolarDays} compresi)</span>
+            <span class="pill"><strong>🏖️ Weekend esclusi:</strong> ${workingDataExcl.weekendDays} gg</span>
+          `;
+        }
+
+        if (workingDataIncl.holidaysFound.length > 0) {
+          const uniqueHolidays = [...new Set(workingDataIncl.holidaysFound)];
+          pillsHtml += `<span class="pill warning"><strong>🏛️ Festività escluse:</strong> ${uniqueHolidays.join(', ')}</span>`;
+        }
+      } else {
+        if (isInclusive) {
+          pillsHtml += `
+            <span class="pill purple"><strong>🗓️ Periodo compreso:</strong> ${inclusiveSolarDays} giorni (${totalSolarDays} gg distanza netta)</span>
+          `;
+        } else {
+          pillsHtml += `
+            <span class="pill highlight"><strong>🗓️ Distanza:</strong> ${totalSolarDays} giorni (${inclusiveSolarDays} gg con estremi inclusi)</span>
+          `;
+        }
+
+        pillsHtml += `
+          <span class="pill ${isWeekend ? 'warning' : 'success'}">${isWeekend ? '🏖️ Fine Settimana' : '💼 Giorno Feriale'}</span>
+          <span class="pill">${isLeap ? '✨ Anno Bisestile' : 'Anno Ordinario'}</span>
+        `;
+      }
+
+      if (holidayOnResult) {
+        pillsHtml += `<span class="pill warning">🎉 <strong>Festività:</strong> ${holidayOnResult}</span>`;
+      }
+
+      const holidaysInInterval = getHolidaysInInterval(baseDate, resDate, isInclusive);
+      if (!isWorkdaysMode && holidaysInInterval.length > 0) {
+        const weekdayCount = holidaysInInterval.filter(h => !h.isWeekend).length;
+        pillsHtml += `<span class="pill warning">🏛️ <strong>Festività:</strong> ${holidaysInInterval.length} (${weekdayCount} ferial${weekdayCount === 1 ? 'e' : 'i'})</span>`;
+      }
+
+      document.getElementById('calcPills').innerHTML = pillsHtml;
+      renderHolidaysDetail('calcHolidaysDetail', holidaysInInterval);
+      document.getElementById('calcResultBox').style.display = 'block';
+    }
+
+    // --- Calcolo Differenza Esatta di Calendario (Anni, Mesi, Giorni reali) ---
+    function getCalendarDifference(dateEarlier, dateLater) {
+      let y1 = dateEarlier.getFullYear();
+      let m1 = dateEarlier.getMonth();
+      let d1 = dateEarlier.getDate();
+
+      let y2 = dateLater.getFullYear();
+      let m2 = dateLater.getMonth();
+      let d2 = dateLater.getDate();
+
+      let years = y2 - y1;
+      let months = m2 - m1;
+      let days = d2 - d1;
+
+      if (days < 0) {
+        const prevMonthDays = new Date(y2, m2, 0).getDate();
+        days += prevMonthDays;
+        months--;
+      }
+
+      if (months < 0) {
+        months += 12;
+        years--;
+      }
+
+      return { years, months, days };
+    }
+
+    // --- TAB 2: Calcolo Differenza tra Date ---
+    function calculateDifference() {
+      const d1Val = document.getElementById('diffDate1').value;
+      const d2Val = document.getElementById('diffDate2').value;
+
+      if (!d1Val || !d2Val) return;
+
+      const date1 = parseLocalDate(d1Val);
+      const date2 = parseLocalDate(d2Val);
+
+      if (!date1 || !date2) return;
+
+      const diffMs = date2.getTime() - date1.getTime();
+      const isSame = (diffMs === 0);
+      const isFuture = (diffMs > 0);
+      const absDiffDays = Math.round(Math.abs(diffMs) / 86400000);
+
+      const earlier = isFuture ? date1 : date2;
+      const later = isFuture ? date2 : date1;
+
+      const isInclusive = document.getElementById('diffInclusiveDates')?.checked || false;
+      const displayDays = isInclusive ? (absDiffDays + 1) : absDiffDays;
+
+      const exact = getCalendarDifference(earlier, later);
+      const workingExcl = countWorkingDays(earlier, later, false);
+      const workingIncl = countWorkingDays(earlier, later, true);
+
+      const parts = [];
+      if (exact.years > 0) parts.push(`${exact.years} ${exact.years === 1 ? 'anno' : 'anni'}`);
+      if (exact.months > 0) parts.push(`${exact.months} ${exact.months === 1 ? 'mese' : 'mesi'}`);
+      if (exact.days > 0) parts.push(`${exact.days} ${exact.days === 1 ? 'giorno' : 'giorni'}`);
+      const exactBreakdown = parts.length > 0 ? parts.join(', ') : 'Stesso giorno';
+
+      const weeks = Math.floor(displayDays / 7);
+      const remDays = displayDays % 7;
+
+      if (isInclusive) {
+        document.getElementById('diffResultMain').innerText = `${displayDays} ${displayDays === 1 ? 'Giorno compreso' : 'Giorni compresi'}`;
+      } else {
+        document.getElementById('diffResultMain').innerText = `${displayDays} ${displayDays === 1 ? 'Giorno' : 'Giorni'}`;
+      }
+
+      let pillsHtml = `
+        <span class="pill highlight"><strong>Esatti:</strong> ${exactBreakdown}</span>
+      `;
+
+      if (isInclusive) {
+        pillsHtml += `
+          <span class="pill purple"><strong>Periodo compreso:</strong> ${displayDays} gg (${absDiffDays} gg netti)</span>
+          <span class="pill success"><strong>Lavorativi compresi:</strong> ${workingIncl.count} gg (${workingExcl.count} netti)</span>
+        `;
+      } else {
+        pillsHtml += `
+          <span class="pill highlight"><strong>Distanza:</strong> ${absDiffDays} gg (${absDiffDays + 1} gg compresi)</span>
+          <span class="pill success"><strong>Lavorativi:</strong> ${workingExcl.count} gg (${workingIncl.count} compresi estremi)</span>
+        `;
+      }
+
+      pillsHtml += `
+        <span class="pill"><strong>Settimane:</strong> ${weeks} sett. e ${remDays} gg</span>
+        <span class="pill"><strong>Stato:</strong> ${isSame ? 'Nessuna differenza' : (isFuture ? 'Data Fine nel futuro' : 'Data Fine nel passato')}</span>
+        <span class="pill"><strong>Ore totali:</strong> ${(displayDays * 24).toLocaleString('it-IT')} h</span>
+      `;
+
+      const holidaysInInterval = getHolidaysInInterval(earlier, later, isInclusive);
+      if (holidaysInInterval.length > 0) {
+        const weekdayCount = holidaysInInterval.filter(h => !h.isWeekend).length;
+        pillsHtml += `<span class="pill warning">🏛️ <strong>Festività:</strong> ${holidaysInInterval.length} (${weekdayCount} ferial${weekdayCount === 1 ? 'e' : 'i'})</span>`;
+      }
+
+      document.getElementById('diffPills').innerHTML = pillsHtml;
+      renderHolidaysDetail('diffHolidaysDetail', holidaysInInterval);
+      document.getElementById('diffResultBox').style.display = 'block';
+    }
+
+    // --- TAB 3: CALCOLO ETÀ & MILESTONES ---
+    function getZodiacSign(day, month) {
+      const dates = [20, 19, 21, 20, 21, 21, 23, 23, 23, 23, 22, 22];
+      const signs = [
+        { name: "Capricorno", emoji: "♑" },
+        { name: "Acquario", emoji: "♒" },
+        { name: "Pesci", emoji: "♓" },
+        { name: "Ariete", emoji: "♈" },
+        { name: "Toro", emoji: "♉" },
+        { name: "Gemelli", emoji: "♊" },
+        { name: "Cancro", emoji: "♋" },
+        { name: "Leone", emoji: "♌" },
+        { name: "Vergine", emoji: "♍" },
+        { name: "Bilancia", emoji: "♎" },
+        { name: "Scorpione", emoji: "♏" },
+        { name: "Sagittario", emoji: "♐" },
+        { name: "Capricorno", emoji: "♑" }
+      ];
+      return (day < dates[month - 1]) ? signs[month - 1] : signs[month];
+    }
+
+    function getChineseZodiac(year) {
+      const animals = [
+        "Topo 🐀", "Bue 🐂", "Tigre 🐅", "Coniglio 🐇",
+        "Drago 🐉", "Serpente 🐍", "Cavallo 🐎", "Capra 🐐",
+        "Scimmia 🐒", "Gallo 🐓", "Cane 🐕", "Maiale 🐖"
+      ];
+      const index = (year - 1900) % 12;
+      return animals[(index + 12) % 12];
+    }
+
+    function calculateAge() {
+      const birthVal = document.getElementById('birthDate').value;
+      const refVal = document.getElementById('ageRefDate').value || todayISO;
+
+      if (!birthVal) return;
+
+      const birthDate = parseLocalDate(birthVal);
+      const refDate = parseLocalDate(refVal);
+
+      if (!birthDate || !refDate) return;
+
+      if (birthDate > refDate) {
+        document.getElementById('ageResultMain').innerText = "Data futura";
+        document.getElementById('agePills').innerHTML = `
+          <span class="pill warning">⚠️ La data di nascita è successiva alla data di riferimento!</span>
+        `;
+        document.getElementById('ageResultBox').style.display = 'block';
+        return;
+      }
+
+      // Scomposizione esatta dell'età
+      const exact = getCalendarDifference(birthDate, refDate);
+      const exactStr = `${exact.years} Anni, ${exact.months} ${exact.months === 1 ? 'Mese' : 'Mesi'} e ${exact.days} ${exact.days === 1 ? 'Giorno' : 'Giorni'}`;
+      document.getElementById('ageResultMain').innerText = exactStr;
+
+      // Totale giorni vissuti
+      const totalDaysLived = Math.round((refDate.getTime() - birthDate.getTime()) / 86400000);
+      const totalWeeksLived = Math.floor(totalDaysLived / 7);
+      const totalHoursLived = totalDaysLived * 24;
+
+      // Giorno della settimana di nascita
+      const weekdayBirth = birthDate.toLocaleDateString('it-IT', { weekday: 'long' });
+
+      // Calcolo Prossimo Compleanno rispetto a refDate
+      let nextBdayYear = refDate.getFullYear();
+      let nextBdayMonth = birthDate.getMonth();
+      let nextBdayDay = birthDate.getDate();
+
+      // Controllo anno bisestile per chi nasce il 29 Febbraio
+      const isLeapBirth = (birthDate.getMonth() === 1 && birthDate.getDate() === 29);
+      if (isLeapBirth) {
+        const isTargetLeap = (nextBdayYear % 4 === 0 && nextBdayYear % 100 !== 0) || (nextBdayYear % 400 === 0);
+        if (!isTargetLeap) nextBdayDay = 28;
+      }
+
+      let nextBday = new Date(nextBdayYear, nextBdayMonth, nextBdayDay, 12, 0, 0);
+      if (nextBday < refDate) {
+        nextBdayYear++;
+        if (isLeapBirth) {
+          const isTargetLeap = (nextBdayYear % 4 === 0 && nextBdayYear % 100 !== 0) || (nextBdayYear % 400 === 0);
+          nextBdayDay = isTargetLeap ? 29 : 28;
+        }
+        nextBday = new Date(nextBdayYear, nextBdayMonth, nextBdayDay, 12, 0, 0);
+      }
+
+      const daysToNextBday = Math.round((nextBday.getTime() - refDate.getTime()) / 86400000);
+      const nextAge = (nextBdayYear - birthDate.getFullYear());
+      const nextBdayWeekday = nextBday.toLocaleDateString('it-IT', { weekday: 'long' });
+      const nextBdayFormatted = nextBday.toLocaleDateString('it-IT', { day: 'numeric', month: 'long', year: 'numeric' });
+
+      // Segno Zodiacale e Oroscopo Cinese
+      const zodiac = getZodiacSign(birthDate.getDate(), birthDate.getMonth() + 1);
+      const chineseZodiac = getChineseZodiac(birthDate.getFullYear());
+
+      // Milestone dei 10.000 giorni
+      const m10k = new Date(birthDate.getTime() + (10000 * 86400000));
+      const m20k = new Date(birthDate.getTime() + (20000 * 86400000));
+      const m30k = new Date(birthDate.getTime() + (30000 * 86400000));
+
+      let milestoneText = "";
+      if (totalDaysLived < 10000) {
+        const diff10k = 10000 - totalDaysLived;
+        milestoneText = `🏆 <strong>Traguardo 10.000 giorni:</strong> tra ${diff10k.toLocaleString('it-IT')} gg (${formatLocalDateToISO(m10k)})`;
+      } else if (totalDaysLived < 20000) {
+        const diff20k = 20000 - totalDaysLived;
+        milestoneText = `🏆 <strong>Traguardo 20.000 giorni:</strong> tra ${diff20k.toLocaleString('it-IT')} gg (${formatLocalDateToISO(m20k)})`;
+      } else if (totalDaysLived < 30000) {
+        const diff30k = 30000 - totalDaysLived;
+        milestoneText = `🏆 <strong>Traguardo 30.000 giorni:</strong> tra ${diff30k.toLocaleString('it-IT')} gg (${formatLocalDateToISO(m30k)})`;
+      } else {
+        const m40k = new Date(birthDate.getTime() + (40000 * 86400000));
+        const diff40k = 40000 - totalDaysLived;
+        milestoneText = `🏆 <strong>Traguardo 40.000 giorni:</strong> tra ${diff40k.toLocaleString('it-IT')} gg (${formatLocalDateToISO(m40k)})`;
+      }
+
+      // Battiti cardiaci e respiri stimati
+      const estHeartbeats = Math.round(totalDaysLived * 100800); // media ~70 bpm
+      const estBreaths = Math.round(totalDaysLived * 23040); // media ~16 respiri/min
+
+      let bdayPill = "";
+      if (daysToNextBday === 0) {
+        bdayPill = `<span class="pill warning">🎉 <strong>OGGI È IL TUO COMPLEANNO!</strong> Tanti Auguri per i tuoi ${exact.years} anni! 🎂</span>`;
+      } else {
+        bdayPill = `<span class="pill purple">🎂 <strong>Prossimo Compleanno:</strong> tra ${daysToNextBday} gg (${nextBdayWeekday} ${nextBdayFormatted} - compirai ${nextAge} anni)</span>`;
+      }
+
+      document.getElementById('agePills').innerHTML = `
+        ${bdayPill}
+        <span class="pill highlight">🗓️ <strong>Giorni vissuti:</strong> ${totalDaysLived.toLocaleString('it-IT')} gg (${totalWeeksLived.toLocaleString('it-IT')} settimane)</span>
+        <span class="pill">👶 <strong>Giorno di nascita:</strong> ${weekdayBirth}</span>
+        <span class="pill">♈ <strong>Segno Zodiacale:</strong> ${zodiac.emoji} ${zodiac.name}</span>
+        <span class="pill">🐉 <strong>Oroscopo Cinese:</strong> ${chineseZodiac}</span>
+        <span class="pill">⏱️ <strong>Ore di vita:</strong> ~${totalHoursLived.toLocaleString('it-IT')} h</span>
+        <span class="pill success" title="Pietra miliare della vita calcolata sui giorni solari invece che in anni (10k gg ≈ 27 anni, 20k gg ≈ 54 anni, 30k gg ≈ 82 anni)">${milestoneText}</span>
+        <span class="pill" title="Stima basata su frequenza cardiaca media a riposo di ~70 battiti/minuto (~100.800 battiti al giorno)">💓 <strong>Battiti stimati:</strong> ~${(estHeartbeats / 1000000).toFixed(1)} Milioni</span>
+        <span class="pill" title="Stima basata su frequenza respiratoria media a riposo di ~16 respiri/minuto (~23.040 atti respiratori al giorno)">🌬️ <strong>Respiri stimati:</strong> ~${(estBreaths / 1000000).toFixed(1)} Milioni</span>
+      `;
+
+      document.getElementById('ageResultBox').style.display = 'block';
+    }
+
+    // Copia risultato negli appunti con feedback toast
+    async function copyResult(elementId, btnElement) {
+      const text = document.getElementById(elementId).innerText;
+      if (!text || text === '-') return;
+
+      try {
+        await navigator.clipboard.writeText(text);
+        
+        btnElement.classList.add('copied');
+        const originalHtml = btnElement.innerHTML;
+        btnElement.innerHTML = `
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
+          <span>Copiato!</span>
+        `;
+        showToast(`Copiato: "${text}"`);
+
+        setTimeout(() => {
+          btnElement.classList.remove('copied');
+          btnElement.innerHTML = originalHtml;
+        }, 2200);
+      } catch (err) {
+        showToast('Impossibile copiare negli appunti');
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toast');
+      const toastMsg = document.getElementById('toastMsg');
+      toastMsg.textContent = msg;
+      toast.classList.add('show');
+      setTimeout(() => {
+        toast.classList.remove('show');
+      }, 2500);
+    }
+
+    // --- Gestione Tema (Chiaro / Scuro) con salvataggio persistente ---
+    function initTheme() {
+      try {
+        const savedTheme = localStorage.getItem('datemaster_theme');
+        if (savedTheme === 'light') {
+          applyTheme('light', false);
+        } else if (savedTheme === 'dark') {
+          applyTheme('dark', false);
+        } else {
+          // Predefinito: Dark Mode
+          applyTheme('dark', false);
+        }
+      } catch (e) {
+        applyTheme('dark', false);
+      }
+    }
+
+    function applyTheme(theme, showNotification = true) {
+      const isLight = (theme === 'light');
+      const themeMeta = document.querySelector('meta[name="theme-color"]');
+      const toggleBtn = document.getElementById('themeToggleBtn');
+      
+      if (isLight) {
+        document.documentElement.setAttribute('data-theme', 'light');
+        try { localStorage.setItem('datemaster_theme', 'light'); } catch (e) {}
+        if (themeMeta) themeMeta.setAttribute('content', '#f1f5f9');
+        if (toggleBtn) toggleBtn.setAttribute('title', 'Passa al tema scuro');
+        if (showNotification) showToast('☀️ Tema Chiaro attivato');
+      } else {
+        document.documentElement.removeAttribute('data-theme');
+        try { localStorage.setItem('datemaster_theme', 'dark'); } catch (e) {}
+        if (themeMeta) themeMeta.setAttribute('content', '#0f172a');
+        if (toggleBtn) toggleBtn.setAttribute('title', 'Passa al tema chiaro');
+        if (showNotification) showToast('🌙 Tema Scuro attivato');
+      }
+    }
+
+    function toggleTheme() {
+      const currentTheme = document.documentElement.getAttribute('data-theme');
+      if (currentTheme === 'light') {
+        applyTheme('dark', true);
+      } else {
+        applyTheme('light', true);
+      }
+    }
+
+    // --- PWA Service Worker & Installazione ---
+    let deferredPrompt = null;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      e.preventDefault();
+      deferredPrompt = e;
+      const installBtn = document.getElementById('pwaInstallBtn');
+      if (installBtn) {
+        installBtn.style.display = 'inline-flex';
+      }
+    });
+
+    async function installPWA() {
+      if (deferredPrompt) {
+        deferredPrompt.prompt();
+        const { outcome } = await deferredPrompt.userChoice;
+        if (outcome === 'accepted') {
+          showToast('🎉 Date Master installato con successo!');
+          const installBtn = document.getElementById('pwaInstallBtn');
+          if (installBtn) installBtn.style.display = 'none';
+        }
+        deferredPrompt = null;
+      } else {
+        showToast('Su Chrome/Edge clicca sull\'icona ⊕ nella barra indirizzi per installare');
+      }
+    }
+
+    window.addEventListener('appinstalled', () => {
+      showToast('🎉 App installata!');
+      const installBtn = document.getElementById('pwaInstallBtn');
+      if (installBtn) installBtn.style.display = 'none';
+      deferredPrompt = null;
+    });
+
+    // Registrazione Service Worker per PWA (attivo su http/https/localhost)
+    if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('sw.js').then((reg) => {
+          console.log('Date Master PWA Service Worker pronto:', reg.scope);
+        }).catch((err) => {
+          console.warn('Date Master PWA Service Worker error:', err);
+        });
+      });
+    }
+
+    // Inizializzazione rapida
+    initTheme();
+    renderQuickTags(false);
+    calculateDate(1);
+    calculateDifference();
+    calculateAge();
+  </script>
+</body>
+</html>
