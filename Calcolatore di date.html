@@ -1198,9 +1198,536 @@
         flex-wrap: wrap;
       }
     }
+
+    /* ========================================================
+       GC CODELAB: SPLASH SCREEN AURORA WIDESCREEN HD (16:9)
+       ======================================================== */
+    @keyframes aurora-float-1 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(45px, 35px) scale(1.15); }
+    }
+    @keyframes aurora-float-2 {
+      0%, 100% { transform: translate(0, 0) scale(1); }
+      50% { transform: translate(-40px, -30px) scale(1.12); }
+    }
+    @keyframes aurora-pulse-glow {
+      0%, 100% { opacity: 0.22; transform: translate(-50%, -50%) scale(1); }
+      50% { opacity: 0.38; transform: translate(-50%, -50%) scale(1.1); }
+    }
+    @keyframes aurora-shimmer {
+      0% { transform: translateX(-100%); }
+      100% { transform: translateX(200%); }
+    }
+    @keyframes aurora-ping {
+      0% { transform: scale(1); opacity: 1; }
+      75%, 100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    #gcSplashScreen {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background-color: #060913;
+      padding: 16px;
+      overflow: hidden;
+      user-select: none;
+      transition: opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1), transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+      cursor: pointer;
+    }
+
+    .aurora-blob {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .aurora-blob-1 {
+      top: -90px;
+      left: -90px;
+      width: 380px;
+      height: 380px;
+      background: radial-gradient(circle, rgba(6, 182, 212, 0.35) 0%, rgba(6, 182, 212, 0) 70%);
+      filter: blur(85px);
+      animation: aurora-float-1 8s ease-in-out infinite;
+    }
+    .aurora-blob-2 {
+      bottom: -90px;
+      right: -90px;
+      width: 420px;
+      height: 420px;
+      background: radial-gradient(circle, rgba(99, 102, 241, 0.32) 0%, rgba(99, 102, 241, 0) 70%);
+      filter: blur(95px);
+      animation: aurora-float-2 10s ease-in-out infinite;
+    }
+    .aurora-blob-3 {
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 520px;
+      height: 320px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.22) 0%, rgba(16, 185, 129, 0) 70%);
+      filter: blur(100px);
+      animation: aurora-pulse-glow 5s ease-in-out infinite;
+    }
+
+    .aurora-tech-grid {
+      position: absolute;
+      inset: 0;
+      opacity: 0.14;
+      pointer-events: none;
+      background-image: radial-gradient(rgba(255, 255, 255, 0.22) 1px, transparent 1px);
+      background-size: 22px 22px;
+    }
+
+    .aurora-widescreen-card {
+      position: relative;
+      width: 95vw;
+      max-width: 820px;
+      aspect-ratio: 16 / 9;
+      min-height: 410px;
+      max-height: 92vh;
+      background: rgba(15, 23, 42, 0.88);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      border-radius: 28px;
+      box-shadow: 0 0 70px rgba(6, 182, 212, 0.22), 0 30px 60px -15px rgba(0, 0, 0, 0.95);
+      padding: 28px 36px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+      z-index: 10;
+    }
+
+    @media (max-width: 640px) {
+      .aurora-widescreen-card {
+        aspect-ratio: auto;
+        min-height: 460px;
+        padding: 22px 20px;
+      }
+    }
+
+    .aurora-neon-beam {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, #22d3ee, #6366f1, #10b981, #22d3ee);
+      background-size: 200% 100%;
+      box-shadow: 0 0 16px rgba(6, 182, 212, 0.9);
+      animation: aurora-shimmer 3s linear infinite;
+    }
+
+    .aurora-topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      z-index: 2;
+    }
+
+    .aurora-badge-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      background: rgba(6, 182, 212, 0.15);
+      color: #67e8f9;
+      border: 1px solid rgba(6, 182, 212, 0.4);
+      box-shadow: 0 0 10px rgba(6, 182, 212, 0.2);
+    }
+
+    .aurora-pulse-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #22d3ee;
+      box-shadow: 0 0 8px #22d3ee;
+      position: relative;
+    }
+    .aurora-pulse-dot::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      border-radius: 50%;
+      background: inherit;
+      animation: aurora-ping 1.5s cubic-bezier(0, 0, 0.2, 1) infinite;
+    }
+
+    .aurora-badge-brand {
+      font-size: 0.72rem;
+      font-family: monospace;
+      color: #94a3b8;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .aurora-center-content {
+      margin: auto 0;
+      padding: 10px 0;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2;
+    }
+
+    .aurora-logo-wrapper {
+      position: relative;
+      margin-bottom: 14px;
+    }
+
+    .aurora-logo-glow {
+      position: absolute;
+      inset: -6px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #22d3ee, #6366f1, #10b981);
+      opacity: 0.85;
+      filter: blur(10px);
+      animation: aurora-pulse-glow 4s ease-in-out infinite;
+    }
+
+    .aurora-logo-box {
+      position: relative;
+      width: 72px;
+      height: 72px;
+      border-radius: 18px;
+      background: linear-gradient(145deg, #1e293b, #090d16);
+      border: 1px solid rgba(103, 232, 249, 0.45);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px;
+      overflow: hidden;
+    }
+
+    .aurora-logo-img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.75));
+    }
+
+    .aurora-app-title {
+      font-size: clamp(1.8rem, 4vw, 2.5rem);
+      font-weight: 900;
+      letter-spacing: -0.02em;
+      background: linear-gradient(135deg, #ffffff 0%, #cffafe 60%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+      line-height: 1.15;
+    }
+
+    .aurora-badges-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      margin-top: 4px;
+    }
+
+    .aurora-pill-cyan {
+      padding: 3px 10px;
+      border-radius: 14px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: rgba(6, 182, 212, 0.18);
+      color: #67e8f9;
+      border: 1px solid rgba(6, 182, 212, 0.45);
+    }
+
+    .aurora-pill-purple {
+      padding: 3px 10px;
+      border-radius: 14px;
+      font-size: 0.68rem;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: rgba(168, 85, 247, 0.18);
+      color: #d8b4fe;
+      border: 1px solid rgba(168, 85, 247, 0.4);
+    }
+
+    .aurora-pill-slate {
+      padding: 3px 10px;
+      border-radius: 14px;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      background: rgba(30, 41, 59, 0.9);
+      color: #cbd5e1;
+      border: 1px solid rgba(71, 85, 105, 0.7);
+    }
+
+    .aurora-app-description {
+      font-size: 0.8rem;
+      color: #94a3b8;
+      margin-top: 8px;
+      max-width: 520px;
+      font-weight: 500;
+      line-height: 1.4;
+      padding: 0 8px;
+    }
+
+    .aurora-progress-container {
+      width: 100%;
+      max-width: 380px;
+      margin-top: 22px;
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .aurora-progress-labels {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.72rem;
+      font-family: monospace;
+    }
+
+    .aurora-status-text {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      color: #67e8f9;
+      font-weight: 600;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .aurora-status-ping {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #22d3ee;
+      box-shadow: 0 0 6px #22d3ee;
+      animation: aurora-ping 1.2s cubic-bezier(0, 0, 0.2, 1) infinite;
+      flex-shrink: 0;
+    }
+
+    .aurora-percentage-text {
+      font-weight: 800;
+      color: #22d3ee;
+      margin-left: 8px;
+    }
+
+    .aurora-progress-track {
+      height: 9px;
+      width: 100%;
+      background: rgba(10, 15, 29, 0.95);
+      border-radius: 10px;
+      overflow: hidden;
+      padding: 2px;
+      border: 1px solid rgba(51, 65, 85, 0.8);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.7);
+      position: relative;
+    }
+
+    .aurora-progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #06b6d4, #6366f1, #10b981);
+      border-radius: 8px;
+      box-shadow: 0 0 16px rgba(6, 182, 212, 0.9);
+      transition: width 0.12s ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .aurora-progress-shimmer {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.45), transparent);
+      animation: aurora-shimmer 1.8s infinite;
+    }
+
+    .aurora-click-hint {
+      font-size: 0.65rem;
+      color: #64748b;
+      text-align: center;
+      font-family: monospace;
+      padding-top: 3px;
+    }
+
+    .aurora-footer {
+      padding-top: 14px;
+      border-top: 1px solid rgba(51, 65, 85, 0.6);
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.68rem;
+      color: #94a3b8;
+      font-weight: 500;
+      z-index: 2;
+    }
+
+    @media (max-width: 580px) {
+      .aurora-footer {
+        flex-direction: column;
+        text-align: center;
+        gap: 6px;
+      }
+    }
+
+    .aurora-copyright {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .aurora-copyright strong {
+      color: #e2e8f0;
+    }
+
+    .aurora-engine-status {
+      font-size: 0.65rem;
+      font-family: monospace;
+      color: #64748b;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .aurora-status-ready {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: #34d399;
+      box-shadow: 0 0 8px #34d399;
+    }
+
+    .btn-splash-preview {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.68rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      margin-left: 6px;
+    }
+    .btn-splash-preview:hover {
+      background: var(--accent-subtle);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
   </style>
 </head>
 <body>
+
+  <!-- ========================================================
+       GC CODELAB: SPLASH SCREEN AURORA WIDESCREEN HD (16:9)
+       ======================================================== -->
+  <div id="gcSplashScreen" class="gc-splash-overlay" title="Fai clic ovunque per accedere subito" role="dialog" aria-modal="true" aria-label="Caricamento applicazione Date Master">
+    <!-- Globi di luce al neon fluorescente Aurora Glow -->
+    <div class="aurora-blob aurora-blob-1"></div>
+    <div class="aurora-blob aurora-blob-2"></div>
+    <div class="aurora-blob aurora-blob-3"></div>
+
+    <!-- Pattern matrice tech ad alta definizione in trasparenza -->
+    <div class="aurora-tech-grid"></div>
+
+    <!-- Cornice Widescreen 16:9 in Glassmorphism e Neon Border -->
+    <div class="aurora-widescreen-card">
+      <!-- Fascio superiore di luce al neon Aurora continuo -->
+      <div class="aurora-neon-beam"></div>
+
+      <!-- Topbar interna della cornice Widescreen -->
+      <div class="aurora-topbar">
+        <span class="aurora-badge-tag">
+          <span class="aurora-pulse-dot"></span>
+          GC-SPLASH • AURORA WIDESCREEN HD
+        </span>
+        <span class="aurora-badge-brand">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          GC CODELAB • DATE MASTER
+        </span>
+      </div>
+
+      <!-- Centro: Logo Software HD, Brand & Barra Fluida -->
+      <div class="aurora-center-content">
+        <!-- Badge Logo 3D con bagliore neon e icona alta definizione -->
+        <div class="aurora-logo-wrapper">
+          <div class="aurora-logo-glow"></div>
+          <div class="aurora-logo-box">
+            <img src="icon-192.png" alt="Date Master Logo" class="aurora-logo-img">
+          </div>
+        </div>
+
+        <!-- Denominazione Software & Brand -->
+        <h1 class="aurora-app-title">
+          DATE MASTER PWA
+        </h1>
+
+        <!-- Badge Subtitle -->
+        <div class="aurora-badges-row">
+          <span class="aurora-pill-cyan">GC CODELAB SUITE</span>
+          <span class="aurora-pill-purple">PROFESSIONAL TIME ENGINE</span>
+          <span class="aurora-pill-slate">OFFLINE READY</span>
+        </div>
+
+        <p class="aurora-app-description">
+          Calcolatore Avanzato di Date, Intervalli, Festività &amp; Pietre Miliari Anagrafiche
+        </p>
+
+        <!-- Barra di Caricamento Fluida al Neon Aurora -->
+        <div class="aurora-progress-container">
+          <div class="aurora-progress-labels">
+            <span id="splashStatusText" class="aurora-status-text">
+              <span class="aurora-status-ping"></span> Inizializzazione motore cronologico...
+            </span>
+            <span id="splashPercentage" class="aurora-percentage-text">0%</span>
+          </div>
+          <div class="aurora-progress-track">
+            <div id="splashProgressBar" class="aurora-progress-bar">
+              <div class="aurora-progress-shimmer"></div>
+            </div>
+          </div>
+          <div class="aurora-click-hint">
+            Fai clic ovunque per accedere istantaneamente
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer: Firma Copyright Ufficiale GC CodeLab -->
+      <div class="aurora-footer">
+        <div class="aurora-copyright">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2.2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+          <span>&copy; 2026 <strong>GC CodeLab</strong> • Sviluppato da <strong>Giovanni Cavallo</strong> • Tutti i diritti riservati.</span>
+        </div>
+        <span class="aurora-engine-status">
+          <span class="aurora-status-ready"></span> ENGINE READY • v1.5 PWA
+        </span>
+      </div>
+    </div>
+  </div>
 
   <main class="app-container" role="main">
     <!-- Selettore Tema Chiaro / Scuro -->
@@ -2596,12 +3123,100 @@
       });
     }
 
+    // ========================================================
+    // GC CODELAB: SPLASH SCREEN AURORA WIDESCREEN HD LOGIC
+    // ========================================================
+    let isSplashScreenEnabled = localStorage.getItem('datemaster_splash_aurora') !== 'false';
+    let splashDismissed = false;
+
+    function initSplashScreen() {
+      const splash = document.getElementById('gcSplashScreen');
+      if (!splash) return;
+
+      if (!isSplashScreenEnabled) {
+        splash.style.display = 'none';
+        return;
+      }
+
+      splashDismissed = false;
+      splash.style.display = 'flex';
+      splash.style.opacity = '1';
+      splash.style.transform = 'scale(1)';
+      splash.style.pointerEvents = 'auto';
+
+      const bar = document.getElementById('splashProgressBar');
+      const percentText = document.getElementById('splashPercentage');
+      const statusText = document.getElementById('splashStatusText');
+
+      let progress = 0;
+      const startTime = performance.now();
+      const duration = 1800; // 1.8s per apprezzare l'effetto Aurora
+
+      function updateProgress(now) {
+        if (splashDismissed) return;
+        const elapsed = now - startTime;
+        progress = Math.min(100, Math.round((elapsed / duration) * 100));
+
+        if (bar) bar.style.width = progress + '%';
+        if (percentText) percentText.textContent = progress + '%';
+
+        if (statusText) {
+          const ping = '<span class="aurora-status-ping"></span>';
+          if (progress < 25) {
+            statusText.innerHTML = ping + ' Inizializzazione motore cronologico...';
+          } else if (progress < 55) {
+            statusText.innerHTML = ping + ' Caricamento calendario festività italiane...';
+          } else if (progress < 85) {
+            statusText.innerHTML = ping + ' Calcolo pietre miliari anagrafiche...';
+          } else {
+            statusText.innerHTML = ping + ' Sistema Pronto! Benvenuto in Date Master';
+          }
+        }
+
+        if (progress < 100) {
+          requestAnimationFrame(updateProgress);
+        } else {
+          setTimeout(() => dismissSplashScreen(), 320);
+        }
+      }
+
+      requestAnimationFrame(updateProgress);
+
+      // Permetti chiusura immediata al click/touch
+      splash.onclick = () => dismissSplashScreen();
+    }
+
+    function dismissSplashScreen() {
+      if (splashDismissed) return;
+      splashDismissed = true;
+      const splash = document.getElementById('gcSplashScreen');
+      if (!splash) return;
+      splash.style.opacity = '0';
+      splash.style.transform = 'scale(1.04)';
+      splash.style.pointerEvents = 'none';
+      setTimeout(() => {
+        splash.style.display = 'none';
+      }, 680);
+    }
+
+    function previewSplashScreen() {
+      splashDismissed = false;
+      initSplashScreen();
+    }
+
     // Inizializzazione rapida
     initTheme();
     renderQuickTags(false);
     calculateDate(1);
     calculateDifference();
     calculateAge();
+
+    // Avvio Splash Screen all'apertura della pagina
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+      initSplashScreen();
+    } else {
+      window.addEventListener('DOMContentLoaded', () => initSplashScreen());
+    }
   </script>
 </body>
 </html>
