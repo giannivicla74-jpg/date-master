@@ -1402,33 +1402,35 @@
 
     .aurora-logo-box {
       position: relative;
-      width: 140px;
-      height: 140px;
-      border-radius: 30px;
-      background: linear-gradient(145deg, #1e293b, #090d16);
-      border: 2px solid rgba(103, 232, 249, 0.55);
-      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.9), 0 0 40px rgba(6, 182, 212, 0.3);
+      width: 340px;
+      height: 210px;
+      border-radius: 20px;
+      background: #0a1020;
+      border: 2px solid rgba(103, 232, 249, 0.5);
+      box-shadow: 0 20px 50px -10px rgba(0, 0, 0, 0.9), 0 0 50px rgba(6, 182, 212, 0.28);
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 10px;
+      padding: 0;
       overflow: hidden;
     }
 
     @media (max-width: 640px) {
       .aurora-logo-box {
-        width: 110px;
-        height: 110px;
-        border-radius: 24px;
-        padding: 8px;
+        width: 92vw;
+        max-width: 320px;
+        height: 170px;
+        border-radius: 16px;
       }
     }
 
     .aurora-logo-img {
       width: 100%;
       height: 100%;
-      object-fit: contain;
-      filter: drop-shadow(0 0 18px rgba(6, 182, 212, 0.85)) drop-shadow(0 0 6px rgba(255, 255, 255, 0.25));
+      object-fit: cover;
+      object-position: center;
+      display: block;
+      filter: brightness(1.05) contrast(1.05);
     }
 
     .aurora-app-title {
@@ -1686,7 +1688,7 @@
         <div class="aurora-logo-wrapper">
           <div class="aurora-logo-glow"></div>
           <div class="aurora-logo-box">
-            <img src="icon-192.png" alt="Date Master Logo" class="aurora-logo-img">
+            <img src="Logo.jfif" alt="GC CodeLab Logo" class="aurora-logo-img">
           </div>
         </div>
 
