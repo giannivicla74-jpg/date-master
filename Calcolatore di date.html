@@ -3160,6 +3160,7 @@
     const todayISO = formatLocalDateToISO(today);
 
     document.getElementById('startDate').value = todayISO;
+    document.getElementById('calcEndDate').value = todayISO;
     document.getElementById('diffDate1').value = todayISO;
     
     // Per diffDate2 impostiamo di default oggi + 30 giorni
@@ -4320,12 +4321,6 @@
     // Inizializzazione rapida
     initTheme();
     updateHistoryBadge();
-    const todayISO = formatLocalDateToISO(new Date());
-    document.getElementById('startDate').value = todayISO;
-    document.getElementById('calcEndDate').value = todayISO;
-    if (!document.getElementById('diffDate1').value) document.getElementById('diffDate1').value = todayISO;
-    if (!document.getElementById('diffDate2').value) document.getElementById('diffDate2').value = todayISO;
-    if (!document.getElementById('ageRefDate').value) document.getElementById('ageRefDate').value = todayISO;
     renderQuickTags(false);
     calculateDate(1);
     calculateDifference();
