@@ -3774,16 +3774,26 @@
       const formatted = resDate.toLocaleDateString('it-IT', options);
 
       document.getElementById('calcResultDate').innerText = formatted;
+
+      const isInclusive = document.getElementById('inclusiveDates').checked;
+      const totalSolarDays = Math.round(Math.abs(resDate.getTime() - baseDate.getTime()) / 86400000);
+      const inclusiveSolarDays = totalSolarDays + 1;
+
       const diffTitleEl = document.getElementById('calcDifferenceTitle');
       if (diffTitleEl) {
         const rawDays = Math.abs(parseInt(document.getElementById('daysToAdd').value) || 0);
         const months = Math.abs(parseInt(document.getElementById('monthsToAdd').value) || 0);
         const years = Math.abs(parseInt(document.getElementById('yearsToAdd').value) || 0);
-        if (rawDays === 0 && months === 0 && years === 0) {
+        if (rawDays === 0 && months === 0 && years === 0 && !isInclusive) {
           diffTitleEl.innerText = 'Difference in Days';
         } else {
-          const totalSolarDays = Math.round(Math.abs(resDate.getTime() - baseDate.getTime()) / 86400000);
-          diffTitleEl.innerText = `Difference in Days: ${totalSolarDays} ${totalSolarDays === 1 ? 'giorno' : 'giorni'}`;
+          if (isWorkdaysMode) {
+            const countToShow = countWorkingDays(baseDate, resDate, isInclusive).count;
+            diffTitleEl.innerText = `Difference in Days: ${countToShow} ${countToShow === 1 ? 'giorno feriale' : 'giorni feriali'}${isInclusive ? ' (estremi compresi)' : ''}`;
+          } else {
+            const countToShow = isInclusive ? inclusiveSolarDays : totalSolarDays;
+            diffTitleEl.innerText = `Difference in Days: ${countToShow} ${countToShow === 1 ? 'giorno' : 'giorni'}${isInclusive ? ' (estremi compresi)' : ''}`;
+          }
         }
       }
 
@@ -3792,10 +3802,6 @@
       const isLeap = (resDate.getFullYear() % 4 === 0 && resDate.getFullYear() % 100 !== 0) || (resDate.getFullYear() % 400 === 0);
       const isWeekend = (resDate.getDay() === 0 || resDate.getDay() === 6);
       const holidayOnResult = getItalianHolidayName(resDate);
-
-      const isInclusive = document.getElementById('inclusiveDates').checked;
-      const totalSolarDays = Math.round(Math.abs(resDate.getTime() - baseDate.getTime()) / 86400000);
-      const inclusiveSolarDays = totalSolarDays + 1;
 
       let pillsHtml = `
         <span class="pill"><strong>Settimana:</strong> ${weekNum}</span>
