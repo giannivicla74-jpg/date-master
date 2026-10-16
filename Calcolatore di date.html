@@ -178,9 +178,13 @@
     .brand-sub-row {
       display: flex;
       align-items: center;
-      justify-content: space-between;
+      justify-content: center;
       gap: 10px;
-      margin-top: 2px;
+      margin-top: 3px;
+    }
+
+    .brand-sub-row:has(.btn-pwa-install:not([style*="display: none"])) {
+      justify-content: space-between;
     }
 
     .btn-pwa-install {
@@ -207,12 +211,16 @@
 
     .brand-subtitle {
       font-size: 0.74rem;
-      font-weight: 600;
-      color: #ffffff;
+      font-weight: 500;
+      color: rgba(255, 255, 255, 0.75);
       letter-spacing: 0.02em;
       margin: 0;
-      text-align: right;
+      text-align: center;
       white-space: nowrap;
+    }
+
+    .brand-sub-row:has(.btn-pwa-install:not([style*="display: none"])) .brand-subtitle {
+      text-align: right;
     }
 
     [data-theme="light"] .brand-subtitle {
@@ -319,6 +327,11 @@
       display: flex;
       gap: 8px;
       align-items: center;
+    }
+
+    .input-with-action input {
+      flex: 1;
+      min-width: 0;
     }
 
     .btn-today {
@@ -1236,9 +1249,9 @@
       font-size: 0.82rem;
       font-weight: 600;
       color: var(--text);
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.25;
     }
 
     .holiday-weekday {
@@ -1922,22 +1935,22 @@
 
     @media (max-width: 440px) {
       .app-container {
-        padding: 18px 12px;
+        padding: 16px 12px;
       }
       .brand-title-group {
-        gap: 8px;
+        gap: 6px;
       }
       .brand-title {
-        font-size: 1.15rem;
+        font-size: 1.12rem;
         gap: 6px;
       }
       .brand-version {
-        font-size: 0.8rem;
+        font-size: 0.75rem;
       }
       .brand-app-logo {
-        width: 44px;
-        height: 44px;
-        border-radius: 11px;
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
       }
       .top-actions-group {
         gap: 5px;
@@ -1955,21 +1968,39 @@
         font-size: 0.68rem;
       }
       .btn-pwa-install {
-        font-size: 0.74rem;
-        padding: 5px 11px;
+        font-size: 0.72rem;
+        padding: 4px 10px;
       }
       .nav-tabs {
         padding: 3px;
-        gap: 2px;
+        gap: 3px;
       }
       .tab-btn {
-        padding: 8px 4px;
-        font-size: 0.72rem;
-        gap: 3px;
+        padding: 8px 3px;
+        font-size: 0.73rem;
+        gap: 4px;
       }
       .tab-btn svg {
         width: 13px;
         height: 13px;
+      }
+      .switch-title {
+        font-size: 0.82rem;
+      }
+      .switch-subtitle {
+        font-size: 0.7rem;
+      }
+      .holidays-summary {
+        flex-wrap: wrap;
+        padding: 8px 10px;
+        gap: 6px;
+      }
+      .holidays-summary-left {
+        font-size: 0.78rem;
+      }
+      .holidays-count-badge {
+        font-size: 0.68rem;
+        padding: 2px 6px;
       }
       .grid-3 {
         gap: 6px;
@@ -2571,12 +2602,12 @@
         </div>
       </div>
       <div class="brand-sub-row">
-        <!-- Tasto Installa PWA -->
-        <button type="button" class="btn-pwa-install" id="pwaInstallBtn" onclick="installPWA()" title="Installa come app sul tuo dispositivo">
+        <!-- Tasto Installa PWA (nascosto se già in standalone o non supportato) -->
+        <button type="button" class="btn-pwa-install" id="pwaInstallBtn" onclick="installPWA()" title="Installa come app sul tuo dispositivo" style="display: none;">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
           <span>Installa App</span>
         </button>
-        <div class="brand-subtitle">GC CodeLab - By Giovanni Cavanni Cavallo</div>
+        <div class="brand-subtitle">GC CodeLab • Sviluppato da Giovanni Cavallo</div>
       </div>
     </header>
 
@@ -2592,7 +2623,7 @@
       </button>
       <button class="tab-btn" id="tab-btn-age" role="tab" aria-selected="false" aria-controls="tab-age" onclick="switchTab('age')">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
-        <span>Età & Mil:tà & Milestone</span>
+        <span>Età & Milestone</span>
       </button>
     </nav>
 
@@ -2707,7 +2738,7 @@
           <label class="switch-label" for="inclusiveDates">
             <div class="switch-text">
               <span class="switch-title">
-                📅 Includi Entrambi gli Estremi
+                📅 Includi Estremi
                 <span class="badge-purple">+1 giorno</span>
               </span>
               <span class="switch-subtitle">Conta sia data inizio che data fine (es. 1-30 set = 30 gg)</span>
@@ -2769,7 +2800,7 @@
         <label class="switch-label" for="diffInclusiveDates">
           <div class="switch-text">
             <span class="switch-title">
-              📅 Includi Entrambi gli Estremi
+              📅 Includi Estremi
               <span class="badge-purple">+1 giorno</span>
             </span>
             <span class="switch-subtitle">Conta sia data inizio che data fine nel conteggio</span>
@@ -4237,13 +4268,28 @@
     // --- PWA Service Worker & Installazione ---
     let deferredPrompt = null;
 
+    function isRunningStandalone() {
+      return (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) ||
+             (window.navigator && window.navigator.standalone === true) ||
+             document.referrer.includes('android-app://');
+    }
+
+    function updateInstallButtonVisibility() {
+      const installBtn = document.getElementById('pwaInstallBtn');
+      if (!installBtn) return;
+      if (isRunningStandalone()) {
+        installBtn.style.display = 'none';
+      } else if (deferredPrompt) {
+        installBtn.style.display = 'inline-flex';
+      } else {
+        installBtn.style.display = 'none';
+      }
+    }
+
     window.addEventListener('beforeinstallprompt', (e) => {
       e.preventDefault();
       deferredPrompt = e;
-      const installBtn = document.getElementById('pwaInstallBtn');
-      if (installBtn) {
-        installBtn.style.display = 'inline-flex';
-      }
+      updateInstallButtonVisibility();
     });
 
     async function installPWA() {
@@ -4257,7 +4303,7 @@
         }
         deferredPrompt = null;
       } else {
-        showToast('Su Chrome/Edge clicca sull\'icona ⊕ nella barra indirizzi per installare');
+        showToast('Su Chrome/Edge clicca sull\'icona ⊕ o nel menu per installare l\'app');
       }
     }
 
@@ -4266,6 +4312,10 @@
       const installBtn = document.getElementById('pwaInstallBtn');
       if (installBtn) installBtn.style.display = 'none';
       deferredPrompt = null;
+    });
+
+    window.addEventListener('DOMContentLoaded', () => {
+      updateInstallButtonVisibility();
     });
 
     // Registrazione Service Worker per PWA (attivo su http/https/localhost)
