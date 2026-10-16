@@ -3,17 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Date Master di GC CodeLab - Calcolatore avanzato di date, intervalli temporali, giorni lavorativi, festività, età esatta e pietre miliari della vita.">
-  <title>Date Master PWA - GC CodeLab</title>
+  <meta name="description" content="Data Master Pro v 1.9.0 - Suite professionale per il calcolo avanzato di date, giorni lavorativi e feriali, calendario festività italiane, differenze esatte, calcolo dell'età e milestone anagrafiche.">
+  <title>Data Master Pro v 1.9.0 - GC CodeLab</title>
   <meta name="theme-color" content="#0f172a">
   
-  <!-- Favicon e Icone PWA generate da Logo.jfif -->
+  <!-- Favicon e Icone PWA generate dal logo ufficiale -->
   <link rel="icon" type="image/png" href="favicon.png">
   <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Date Master">
+  <meta name="apple-mobile-web-app-title" content="Data Master Pro">
   <meta name="mobile-web-app-capable" content="yes">
+
+  <!-- Font Tipografici Google: Outfit per l'interfaccia e Playfair Display / Cinzel per il titolo elegante -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700&family=Outfit:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 
   <!-- Web App Manifest Ufficiale PWA -->
   <link rel="manifest" href="manifest.json">
@@ -33,22 +38,23 @@
   <style>
     :root {
       --bg-color: #0b1120;
-      --card-bg: #1e293b;
-      --card-inner: #0f172a;
+      --card-bg: #121c2e;
+      --card-inner: #0b1322;
       --accent: #38bdf8;
       --accent-hover: #0284c7;
       --accent-subtle: rgba(56, 189, 248, 0.12);
       --accent-border: rgba(56, 189, 248, 0.3);
       --text: #f8fafc;
       --text-muted: #94a3b8;
-      --border: #334155;
+      --border: rgba(255, 255, 255, 0.08);
       --success: #34d399;
       --warning: #fbbf24;
       --danger: #f87171;
       --purple: #c084fc;
       --purple-subtle: rgba(192, 132, 252, 0.12);
       --purple-border: rgba(192, 132, 252, 0.3);
-      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-serif: 'Playfair Display', 'Cinzel', Georgia, 'Times New Roman', serif;
+      --font-sans: 'Outfit', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     }
 
     * {
@@ -67,18 +73,20 @@
       min-height: 100vh;
       padding: 20px 16px;
       line-height: 1.5;
+      transition: background-color 0.25s ease, color 0.25s ease;
     }
 
     .app-container {
       background-color: var(--card-bg);
       border: 1px solid var(--border);
       border-radius: 24px;
-      padding: 26px;
+      padding: 26px 22px;
       width: 100%;
-      max-width: 500px;
-      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      max-width: 550px;
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
       position: relative;
       overflow: hidden;
+      transition: background-color 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
     }
 
     .app-container::before {
@@ -87,64 +95,96 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 4px;
-      background: linear-gradient(90deg, #0284c7, #38bdf8, #c084fc);
+      height: 3px;
+      background: linear-gradient(90deg, #06b6d4 0%, #3b82f6 50%, #c084fc 100%);
     }
 
+    /* Brand Header Stile Elegante */
     .brand-header {
-      text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 22px;
+      position: relative;
+      padding-right: 48px; /* Spazio per il pulsante del tema in alto a destra */
     }
 
-    .brand-badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 0.75rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      color: var(--accent);
-      text-transform: uppercase;
-      background: var(--accent-subtle);
-      border: 1px solid var(--accent-border);
-      padding: 4px 12px;
-      border-radius: 9999px;
-      margin-bottom: 8px;
-    }
-
-    h1 {
-      font-size: 1.5rem;
-      font-weight: 800;
-      letter-spacing: -0.02em;
-      color: var(--text);
-    }
-
-    .brand-title-row {
+    .brand-main-row {
       display: flex;
       align-items: center;
-      justify-content: center;
-      gap: 12px;
+      gap: 16px;
     }
 
     .brand-app-logo {
-      width: 42px;
-      height: 42px;
-      border-radius: 11px;
-      box-shadow: 0 4px 14px rgba(56, 189, 248, 0.3);
-      object-fit: cover;
-      border: 1px solid var(--accent-border);
+      width: 62px;
+      height: 62px;
+      border-radius: 15px;
+      object-fit: contain;
+      flex-shrink: 0;
+      border: none;
+      background: transparent;
+      filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.45)) drop-shadow(0 0 12px rgba(56, 189, 248, 0.25));
+      transition: transform 0.25s ease, filter 0.25s ease;
     }
 
-    .badge-logo-img {
-      width: 14px;
-      height: 14px;
-      border-radius: 3px;
-      object-fit: cover;
+    .brand-app-logo:hover {
+      transform: scale(1.04);
+      filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.55)) drop-shadow(0 0 18px rgba(56, 189, 248, 0.4));
+    }
+
+    .brand-title-container {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .brand-title {
+      font-family: var(--font-serif);
+      font-size: 1.62rem;
+      font-weight: 700;
+      color: #ffffff;
+      letter-spacing: 0.012em;
+      line-height: 1.2;
+      margin: 0;
+      display: flex;
+      align-items: baseline;
+      gap: 12px;
+      flex-wrap: wrap;
+      text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    }
+
+    .brand-version {
+      font-family: var(--font-serif);
+      font-size: 1.05rem;
+      font-weight: 400;
+      color: rgba(255, 255, 255, 0.9);
+      letter-spacing: 0.025em;
+    }
+
+    [data-theme="light"] .brand-title {
+      color: #0f172a;
+      text-shadow: none;
+    }
+
+    [data-theme="light"] .brand-version {
+      color: #1e293b;
+      opacity: 0.9;
+    }
+
+    .brand-subtitle {
+      font-size: 0.74rem;
+      font-weight: 600;
+      color: #cbd5e1;
+      letter-spacing: 0.02em;
+      margin-top: 6px;
+      text-align: right;
+    }
+
+    [data-theme="light"] .brand-subtitle {
+      color: #475569;
     }
 
     .btn-pwa-install {
       display: none;
-      margin: 10px auto 0 auto;
+      margin: 12px auto 0 auto;
       background: linear-gradient(135deg, #0284c7, #38bdf8);
       color: #0f172a;
       font-weight: 700;
@@ -173,40 +213,60 @@
     /* Tab Navigation a 3 schede */
     .nav-tabs {
       display: flex;
-      background-color: var(--card-inner);
+      background-color: rgba(11, 19, 37, 0.85);
       padding: 4px;
-      border-radius: 12px;
+      border-radius: 14px;
       margin-bottom: 22px;
-      border: 1px solid var(--border);
+      border: 1px solid rgba(255, 255, 255, 0.08);
       gap: 4px;
+    }
+
+    [data-theme="light"] .nav-tabs {
+      background-color: #f1f5f9;
+      border-color: #cbd5e1;
     }
 
     .tab-btn {
       flex: 1;
-      padding: 9px 8px;
-      border: none;
+      padding: 10px 8px;
+      border: 1px solid transparent;
       background: transparent;
-      color: var(--text-muted);
-      font-weight: 600;
+      color: #94a3b8;
+      font-weight: 500;
       font-size: 0.82rem;
-      border-radius: 8px;
+      border-radius: 10px;
       cursor: pointer;
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 5px;
+      gap: 6px;
       white-space: nowrap;
     }
 
     .tab-btn:hover {
-      color: var(--text);
+      color: #f1f5f9;
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    [data-theme="light"] .tab-btn:hover {
+      color: #0f172a;
+      background: rgba(0, 0, 0, 0.04);
     }
 
     .tab-btn.active {
-      background-color: var(--card-bg);
-      color: var(--accent);
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      background: rgba(14, 165, 233, 0.16);
+      border-color: rgba(56, 189, 248, 0.4);
+      color: #38bdf8;
+      font-weight: 700;
+      box-shadow: 0 0 12px rgba(56, 189, 248, 0.15);
+    }
+
+    [data-theme="light"] .tab-btn.active {
+      background: #ffffff;
+      border-color: #38bdf8;
+      color: #0284c7;
+      box-shadow: 0 4px 12px rgba(14, 165, 233, 0.15);
     }
 
     .tab-btn:focus-visible {
@@ -634,6 +694,174 @@
       transform: rotate(180deg);
     }
 
+    /* Layout a Fascia Centrale (fedele al 100% all'ultima foto utente) */
+    .calc-strip-layout {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 16px;
+    }
+
+    /* Riga Superiore */
+    .calc-top-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .calc-date-box-left {
+      width: 60%;
+      min-width: 240px;
+      max-width: 320px;
+      margin-bottom: 0;
+    }
+
+    .calc-badge-container {
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      padding-bottom: 8px;
+      flex: 1;
+    }
+
+    .preview-badge {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #38bdf8;
+      background: rgba(14, 165, 233, 0.14);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      padding: 4px 10px;
+      border-radius: 6px;
+      display: inline-block;
+      white-space: nowrap;
+    }
+
+    [data-theme="light"] .preview-badge {
+      color: #0284c7;
+      background: rgba(2, 132, 199, 0.08);
+      border-color: rgba(2, 132, 199, 0.3);
+    }
+
+    /* Fascia Risultato Centrale racchiusa tra due linee sottili continue */
+    .calc-result-banner {
+      width: 100%;
+      padding: 12px 10px;
+      margin: 0 0 14px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.15);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+
+    [data-theme="light"] .calc-result-banner {
+      border-top-color: rgba(0, 0, 0, 0.12);
+      border-bottom-color: rgba(0, 0, 0, 0.12);
+    }
+
+    .preview-date {
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: #ffffff;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      text-align: center;
+    }
+
+    [data-theme="light"] .preview-date {
+      color: #0f172a;
+    }
+
+    /* Riga Inferiore: Tasto Swap a sinistra e Data Fine a destra */
+    .calc-bottom-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 6px;
+    }
+
+    .calc-swap-left {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-bottom: 5px; /* Allineato verticalmente al centro del campo input */
+      padding-left: 45px; /* Posizionato a sinistra ma staccato dal bordo, esattamente come nella foto */
+    }
+
+    .calc-bottom-row .calc-swap-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: var(--card-inner);
+      border: 1px solid var(--border);
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.22s ease;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+    }
+
+    .calc-bottom-row .calc-swap-btn:hover {
+      color: var(--accent);
+      border-color: var(--accent);
+      transform: rotate(180deg);
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.35);
+    }
+
+    [data-theme="light"] .calc-bottom-row .calc-swap-btn {
+      background: #ffffff;
+      border-color: #cbd5e1;
+      color: #475569;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+
+    .calc-date-box-right {
+      width: 60%;
+      min-width: 240px;
+      max-width: 320px;
+      margin-bottom: 0;
+      margin-left: auto;
+    }
+
+    @media (max-width: 480px) {
+      .calc-top-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+      }
+      .calc-badge-container {
+        justify-content: flex-start;
+        padding-bottom: 0;
+      }
+      .calc-date-box-left,
+      .calc-date-box-right {
+        width: 100%;
+        max-width: 100%;
+        margin-left: 0;
+      }
+      .calc-bottom-row {
+        flex-direction: column-reverse;
+        align-items: stretch;
+        gap: 10px;
+      }
+      .calc-swap-left {
+        padding-left: 0;
+        justify-content: center;
+      }
+      .preview-date {
+        font-size: 1.15rem;
+      }
+    }
+
+
     /* Result Box */
     .result-box {
       margin-top: 22px;
@@ -1048,28 +1276,28 @@
     /* --- Pulsante Selettore Tema --- */
     .btn-theme-toggle {
       position: absolute;
-      top: 20px;
-      right: 20px;
+      top: 22px;
+      right: 22px;
       width: 38px;
       height: 38px;
       border-radius: 50%;
-      border: 1px solid var(--border);
-      background: var(--card-inner);
-      color: var(--text-muted);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: rgba(255, 255, 255, 0.05);
+      color: #94a3b8;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
       z-index: 10;
     }
 
     .btn-theme-toggle:hover {
-      color: var(--accent);
-      border-color: var(--accent);
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.5);
       transform: scale(1.08) rotate(15deg);
-      background: var(--card-bg);
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .theme-icon-sun {
@@ -1101,6 +1329,8 @@
     }
 
     [data-theme="light"] .app-container {
+      background-color: #ffffff;
+      border: 1px solid #e2e8f0;
       box-shadow: 0 20px 45px -12px rgba(15, 23, 42, 0.08), 0 0 0 1px rgba(0, 0, 0, 0.05);
     }
 
@@ -1112,9 +1342,17 @@
       display: block;
     }
 
+    [data-theme="light"] .btn-theme-toggle {
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #475569;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    }
+
     [data-theme="light"] .btn-theme-toggle:hover {
-      color: var(--purple);
-      border-color: var(--purple);
+      background: #e2e8f0;
+      color: #0284c7;
+      border-color: #0284c7;
     }
 
     [data-theme="light"] input[type="date"],
@@ -1682,7 +1920,7 @@
         </span>
         <span class="aurora-badge-brand">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-          GC CODELAB • DATE MASTER
+          GC CODELAB • DATA MASTER PRO
         </span>
       </div>
 
@@ -1698,7 +1936,7 @@
 
         <!-- Denominazione Software & Brand -->
         <h1 class="aurora-app-title">
-          DATE MASTER PWA
+          DATA MASTER PRO v 1.9.0
         </h1>
 
         <!-- Badge Subtitle -->
@@ -1709,7 +1947,7 @@
         </div>
 
         <p class="aurora-app-description">
-          Calcolatore Avanzato di Date, Intervalli, Festività &amp; Pietre Miliari Anagrafiche
+          Suite Professionale per il Calcolo Avanzato di Date, Giorni Lavorativi, Festività Italiane, Differenze Esatte, Età &amp; Milestone Anagrafiche
         </p>
 
         <!-- Barra di Caricamento Fluida al Neon Aurora -->
@@ -1764,13 +2002,12 @@
     </button>
 
     <header class="brand-header">
-      <div class="brand-badge">
-        <img src="favicon.png" alt="Logo" class="badge-logo-img">
-        GC CodeLab
-      </div>
-      <div class="brand-title-row">
-        <img src="icon-192.png" alt="Date Master Logo" class="brand-app-logo">
-        <h1>Date Master</h1>
+      <div class="brand-main-row">
+        <img src="logo-app-clean.png" alt="Data Master Pro Logo" class="brand-app-logo">
+        <div class="brand-title-container">
+          <h1 class="brand-title">Data Master Pro <span class="brand-version">v 1.9.0</span></h1>
+          <div class="brand-subtitle">GC CodeLab - By Giovanni Cavallo</div>
+        </div>
       </div>
       <!-- Tasto Installa PWA se supportato dal browser -->
       <button type="button" class="btn-pwa-install" id="pwaInstallBtn" onclick="installPWA()" title="Installa come app sul tuo dispositivo">
@@ -1797,33 +2034,47 @@
 
     <!-- TAB 1: Calcola Data (Aggiungi/Sottrai) -->
     <section id="tab-calc" class="tab-content active" role="tabpanel" aria-labelledby="tab-btn-calc">
-      <div class="form-group">
-        <div class="label-row">
-          <label for="startDate">Data di Partenza</label>
-          <span style="font-size: 0.72rem; color: var(--text-muted);">Tastiera o Calendario 📅</span>
+      <!-- Layout a 3 sezioni con fascia risultato centrale (fedele al 100% all'ultima foto) -->
+      <div class="calc-strip-layout">
+        <!-- 1. Riga Superiore: Data di Partenza a sinistra e badge DATA RISULTANTE a destra -->
+        <div class="calc-top-row">
+          <div class="form-group calc-date-box-left">
+            <div class="label-row">
+              <label for="startDate">Data di Partenza</label>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">Tastiera o Calendario 📅</span>
+            </div>
+            <div class="input-with-action">
+              <input type="date" id="startDate" aria-label="Data di partenza" oninput="onStartDateChange()" onchange="onStartDateChange()">
+              <button type="button" class="btn-today" onclick="setStartDateToday()" title="Imposta alla data odierna">Oggi</button>
+            </div>
+          </div>
+          <div class="calc-badge-container">
+            <span class="preview-badge">DATA RISULTANTE</span>
+          </div>
         </div>
-        <div class="input-with-action">
-          <input type="date" id="startDate" aria-label="Data di partenza" oninput="onStartDateChange()" onchange="onStartDateChange()">
-          <button type="button" class="btn-today" onclick="setStartDateToday()" title="Imposta alla data odierna">Oggi</button>
-        </div>
-      </div>
 
-      <!-- Tasto Rapido Scambia Date nel Tab 1 -->
-      <div class="swap-divider-calc">
-        <button type="button" class="btn-swap" onclick="swapCalcDates()" title="Inverti Data di Partenza e Data Fine">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4m0 0L3 8m4-4 4 4M17 8v12m0 0 4-4m-4 4-4-4"/></svg>
-        </button>
-      </div>
-
-      <!-- Data Fine Diretta nel Tab 1 -->
-      <div class="form-group">
-        <div class="label-row">
-          <label for="calcEndDate">Data Fine</label>
-          <span style="font-size: 0.72rem; color: var(--text-muted);">Tastiera o Calendario 📅</span>
+        <!-- 2. Fascia Risultato Centrale racchiusa tra due linee sottili -->
+        <div class="calc-result-banner">
+          <div class="preview-date" id="calcQuickResultDate">-</div>
         </div>
-        <div class="input-with-action">
-          <input type="date" id="calcEndDate" aria-label="Data fine" oninput="onCalcEndDateChange()" onchange="onCalcEndDateChange()">
-          <button type="button" class="btn-today" onclick="setCalcEndDateToday()" title="Imposta data fine ad oggi">Oggi</button>
+
+        <!-- 3. Riga Inferiore: Tasto Swap a sinistra e Data Fine a destra -->
+        <div class="calc-bottom-row">
+          <div class="calc-swap-left">
+            <button type="button" class="btn-swap calc-swap-btn" onclick="swapCalcDates()" title="Inverti Data di Partenza e Data Fine" aria-label="Inverti date">
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M7 16V4m0 0L3 8m4-4 4 4M17 8v12m0 0 4-4m-4 4-4-4"/></svg>
+            </button>
+          </div>
+          <div class="form-group calc-date-box-right">
+            <div class="label-row">
+              <label for="calcEndDate">Data Fine</label>
+              <span style="font-size: 0.72rem; color: var(--text-muted);">Tastiera o Calendario 📅</span>
+            </div>
+            <div class="input-with-action">
+              <input type="date" id="calcEndDate" aria-label="Data fine" oninput="onCalcEndDateChange()" onchange="onCalcEndDateChange()">
+              <button type="button" class="btn-today" onclick="setCalcEndDateToday()" title="Imposta data fine ad oggi">Oggi</button>
+            </div>
+          </div>
         </div>
       </div>
 
@@ -2081,7 +2332,7 @@
     <!-- Footer -->
     <footer class="app-footer">
       <div><strong>GC CodeLab</strong> • <span class="developer">Sviluppato da Giovanni Cavallo</span></div>
-      <div><span class="status"><span class="status-dot"></span> v 1.4.0 Offline Standalone</span></div>
+      <div><span class="status"><span class="status-dot"></span> v 1.9.0 Offline Standalone</span></div>
     </footer>
   </main>
 
@@ -2696,6 +2947,8 @@
       const formatted = resDate.toLocaleDateString('it-IT', options);
 
       document.getElementById('calcResultDate').innerText = formatted;
+      const quickResEl = document.getElementById('calcQuickResultDate');
+      if (quickResEl) quickResEl.innerText = formatted;
 
       const weekNum = getWeekNumber(resDate);
       const dayOfYear = getDayOfYear(resDate);
@@ -2708,7 +2961,6 @@
       const inclusiveSolarDays = totalSolarDays + 1;
 
       let pillsHtml = `
-        <span class="pill highlight"><strong>ISO:</strong> ${formatLocalDateToISO(resDate)}</span>
         <span class="pill"><strong>Settimana:</strong> ${weekNum}</span>
         <span class="pill"><strong>Giorno:</strong> ${dayOfYear}° dell'anno</span>
       `;
@@ -2973,17 +3225,17 @@
       let milestoneText = "";
       if (totalDaysLived < 10000) {
         const diff10k = 10000 - totalDaysLived;
-        milestoneText = `🏆 <strong>Traguardo 10.000 giorni:</strong> tra ${diff10k.toLocaleString('it-IT')} gg (${formatLocalDateToISO(m10k)})`;
+        milestoneText = `🏆 <strong>Traguardo 10.000 giorni:</strong> tra ${diff10k.toLocaleString('it-IT')} gg (${m10k.toLocaleDateString('it-IT')})`;
       } else if (totalDaysLived < 20000) {
         const diff20k = 20000 - totalDaysLived;
-        milestoneText = `🏆 <strong>Traguardo 20.000 giorni:</strong> tra ${diff20k.toLocaleString('it-IT')} gg (${formatLocalDateToISO(m20k)})`;
+        milestoneText = `🏆 <strong>Traguardo 20.000 giorni:</strong> tra ${diff20k.toLocaleString('it-IT')} gg (${m20k.toLocaleDateString('it-IT')})`;
       } else if (totalDaysLived < 30000) {
         const diff30k = 30000 - totalDaysLived;
-        milestoneText = `🏆 <strong>Traguardo 30.000 giorni:</strong> tra ${diff30k.toLocaleString('it-IT')} gg (${formatLocalDateToISO(m30k)})`;
+        milestoneText = `🏆 <strong>Traguardo 30.000 giorni:</strong> tra ${diff30k.toLocaleString('it-IT')} gg (${m30k.toLocaleDateString('it-IT')})`;
       } else {
         const m40k = new Date(birthDate.getTime() + (40000 * 86400000));
         const diff40k = 40000 - totalDaysLived;
-        milestoneText = `🏆 <strong>Traguardo 40.000 giorni:</strong> tra ${diff40k.toLocaleString('it-IT')} gg (${formatLocalDateToISO(m40k)})`;
+        milestoneText = `🏆 <strong>Traguardo 40.000 giorni:</strong> tra ${diff40k.toLocaleString('it-IT')} gg (${m40k.toLocaleDateString('it-IT')})`;
       }
 
       // Battiti cardiaci e respiri stimati

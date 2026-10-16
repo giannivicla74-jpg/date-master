@@ -1,9 +1,9 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
-  "id": "date-master-pwa-gccodelab",
-  "name": "Date Master - GC CodeLab",
-  "short_name": "Date Master",
-  "description": "Calcolatore avanzato di date, giorni lavorativi, festività italiane, età esatta e milestone della vita.",
+  "id": "data-master-pro-pwa-gccodelab",
+  "name": "Data Master Pro v 1.9.0 - GC CodeLab",
+  "short_name": "Data Master Pro",
+  "description": "Data Master Pro v 1.9.0 - Suite professionale per il calcolo avanzato di date, giorni lavorativi e feriali, calendario festività italiane, differenze esatte, calcolo dell'età e milestone anagrafiche.",
   "start_url": "index.html",
   "scope": "./",
   "display": "standalone",

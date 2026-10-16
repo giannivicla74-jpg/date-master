@@ -27,11 +27,11 @@ if (-not (Test-Path $chromePath)) {
 
 # Crea scorciatoia sul Desktop
 $wsh = New-Object -ComObject WScript.Shell
-$shortcutPath = Join-Path $desktop "Date Master.lnk"
+$shortcutPath = Join-Path $desktop "Data Master Pro.lnk"
 $shortcut = $wsh.CreateShortcut($shortcutPath)
 $shortcut.TargetPath = $chromePath
 $shortcut.Arguments = "--app=https://giannivicla74-jpg.github.io/date-master/"
-$shortcut.Description = "Date Master - GC CodeLab PWA"
+$shortcut.Description = "Data Master Pro - GC CodeLab PWA"
 $shortcut.WorkingDirectory = [System.IO.Path]::GetDirectoryName($chromePath)
 
 if (Test-Path $icoPath) {

@@ -1,7 +1,7 @@
 @echo off
-title Date Master PWA - GC CodeLab
+title Data Master Pro PWA - GC CodeLab
 echo ========================================================
-echo   Date Master PWA - Avvio con Installabilita Completa
+echo   Data Master Pro PWA - Avvio con Installabilita Completa
 echo ========================================================
 echo.
 echo Avvio del server locale su porta 8080...
