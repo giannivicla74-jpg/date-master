@@ -1,5 +1,5 @@
 // Date Master Service Worker - GC CodeLab
-const CACHE_NAME = 'date-master-pwa-v1.9.9';
+const CACHE_NAME = 'date-master-pwa-v1.9.10';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',

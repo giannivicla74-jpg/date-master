@@ -103,7 +103,7 @@
     .brand-header {
       margin-bottom: 22px;
       position: relative;
-      padding-right: 48px; /* Spazio per il pulsante del tema in alto a destra */
+      padding-right: 96px; /* Spazio per i 2 pulsanti (Cronologia e Tema) in alto a destra */
     }
 
     .brand-main-row {
@@ -1273,11 +1273,19 @@
       padding-top: 2px;
     }
 
-    /* --- Pulsante Selettore Tema --- */
-    .btn-theme-toggle {
+    /* --- Gruppo Azioni in Alto a Destra (Cronologia & Tema) --- */
+    .top-actions-group {
       position: absolute;
       top: 22px;
       right: 22px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      z-index: 15;
+    }
+
+    .btn-action-icon {
+      position: relative;
       width: 38px;
       height: 38px;
       border-radius: 50%;
@@ -1290,14 +1298,36 @@
       cursor: pointer;
       transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-      z-index: 10;
+    }
+
+    .btn-action-icon:hover {
+      color: #38bdf8;
+      border-color: rgba(56, 189, 248, 0.5);
+      transform: scale(1.08);
+      background: rgba(255, 255, 255, 0.1);
     }
 
     .btn-theme-toggle:hover {
-      color: #38bdf8;
-      border-color: rgba(56, 189, 248, 0.5);
       transform: scale(1.08) rotate(15deg);
-      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .history-badge {
+      position: absolute;
+      top: -3px;
+      right: -3px;
+      background: #0284c7;
+      color: #ffffff;
+      font-size: 0.62rem;
+      font-weight: 800;
+      min-width: 17px;
+      height: 17px;
+      border-radius: 10px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 0 4px;
+      box-shadow: 0 0 6px rgba(2, 132, 199, 0.8);
+      border: 1px solid rgba(255, 255, 255, 0.3);
     }
 
     .theme-icon-sun {
@@ -1306,6 +1336,345 @@
 
     .theme-icon-moon {
       display: none;
+    }
+
+    /* --- Drawer & Overlay Cronologia Calcoli --- */
+    .history-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(4, 8, 16, 0.72);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 10000;
+      display: flex;
+      justify-content: flex-end;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.28s ease;
+    }
+
+    .history-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .history-drawer {
+      width: 100%;
+      max-width: 440px;
+      height: 100%;
+      background: #0f172a;
+      border-left: 1px solid rgba(255, 255, 255, 0.12);
+      box-shadow: -15px 0 40px rgba(0, 0, 0, 0.7);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+      overflow: hidden;
+    }
+
+    .history-overlay.open .history-drawer {
+      transform: translateX(0);
+    }
+
+    .history-drawer-header {
+      padding: 20px 20px 14px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .history-title-group {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .history-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .history-title svg {
+      color: #38bdf8;
+    }
+
+    .history-subtitle {
+      font-size: 0.74rem;
+      color: #94a3b8;
+    }
+
+    .history-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-clear-history {
+      background: transparent;
+      border: 1px solid rgba(248, 113, 113, 0.3);
+      color: #f87171;
+      padding: 5px 10px;
+      border-radius: 8px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .btn-clear-history:hover {
+      background: rgba(248, 113, 113, 0.15);
+      border-color: #f87171;
+    }
+
+    .btn-close-drawer {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #cbd5e1;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .btn-close-drawer:hover {
+      background: rgba(255, 255, 255, 0.15);
+      color: #ffffff;
+      transform: scale(1.08);
+    }
+
+    .history-filter-bar {
+      display: flex;
+      gap: 6px;
+      padding: 12px 20px;
+      background: rgba(11, 19, 34, 0.4);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      overflow-x: auto;
+    }
+
+    .history-filter-btn {
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 0.73rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #94a3b8;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.18s;
+    }
+
+    .history-filter-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: #f8fafc;
+    }
+
+    .history-filter-btn.active {
+      background: rgba(14, 165, 233, 0.2);
+      border-color: #38bdf8;
+      color: #38bdf8;
+    }
+
+    .history-list-container {
+      flex: 1;
+      overflow-y: auto;
+      padding: 16px 20px 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .history-item-card {
+      background: rgba(18, 28, 46, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: all 0.22s ease;
+      position: relative;
+    }
+
+    .history-item-card:hover {
+      border-color: rgba(56, 189, 248, 0.4);
+      background: rgba(24, 38, 62, 0.88);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .history-card-top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .history-tag {
+      font-size: 0.65rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+
+    .history-tag.tag-calc {
+      background: rgba(14, 165, 233, 0.16);
+      color: #38bdf8;
+      border: 1px solid rgba(56, 189, 248, 0.35);
+    }
+
+    .history-tag.tag-diff {
+      background: rgba(52, 211, 153, 0.16);
+      color: #34d399;
+      border: 1px solid rgba(52, 211, 153, 0.35);
+    }
+
+    .history-tag.tag-age {
+      background: rgba(192, 132, 252, 0.16);
+      color: #c084fc;
+      border: 1px solid rgba(192, 132, 252, 0.35);
+    }
+
+    .history-time {
+      font-size: 0.68rem;
+      color: #64748b;
+      margin-left: auto;
+    }
+
+    .btn-delete-single-history {
+      background: transparent;
+      border: none;
+      color: #64748b;
+      cursor: pointer;
+      padding: 2px 5px;
+      font-size: 0.95rem;
+      line-height: 1;
+      border-radius: 4px;
+      transition: color 0.18s;
+    }
+
+    .btn-delete-single-history:hover {
+      color: #f87171;
+    }
+
+    .history-card-body {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .history-calc-title {
+      font-size: 0.82rem;
+      color: #94a3b8;
+      font-weight: 500;
+    }
+
+    .history-calc-result {
+      font-size: 0.96rem;
+      font-weight: 700;
+      color: #ffffff;
+      line-height: 1.3;
+    }
+
+    .history-card-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+      padding-top: 6px;
+      border-top: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .btn-restore-calc {
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.35);
+      color: #38bdf8;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s;
+    }
+
+    .btn-restore-calc:hover {
+      background: #0284c7;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+
+    .btn-copy-history {
+      background: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: #94a3b8;
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 0.74rem;
+      font-weight: 500;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s;
+      margin-left: auto;
+    }
+
+    .btn-copy-history:hover {
+      color: #ffffff;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .history-empty-state {
+      margin: auto;
+      text-align: center;
+      padding: 40px 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      color: #64748b;
+    }
+
+    .history-empty-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.04);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #94a3b8;
+      margin-bottom: 4px;
+    }
+
+    .history-empty-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #cbd5e1;
+    }
+
+    .history-empty-desc {
+      font-size: 0.78rem;
+      line-height: 1.4;
+      max-width: 250px;
     }
 
     /* --- Tema Chiaro (Light Mode) --- */
@@ -1342,17 +1711,91 @@
       display: block;
     }
 
-    [data-theme="light"] .btn-theme-toggle {
+    [data-theme="light"] .btn-action-icon {
       background: #f1f5f9;
       border: 1px solid #cbd5e1;
       color: #475569;
       box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
     }
 
-    [data-theme="light"] .btn-theme-toggle:hover {
+    [data-theme="light"] .btn-action-icon:hover {
       background: #e2e8f0;
       color: #0284c7;
       border-color: #0284c7;
+    }
+
+    [data-theme="light"] .history-drawer {
+      background: #ffffff;
+      border-left-color: #cbd5e1;
+      box-shadow: -15px 0 35px rgba(0, 0, 0, 0.12);
+    }
+
+    [data-theme="light"] .history-drawer-header {
+      border-bottom-color: #e2e8f0;
+    }
+
+    [data-theme="light"] .history-title {
+      color: #0f172a;
+    }
+
+    [data-theme="light"] .btn-close-drawer {
+      background: #f1f5f9;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    [data-theme="light"] .history-filter-bar {
+      background: #f8fafc;
+      border-bottom-color: #e2e8f0;
+    }
+
+    [data-theme="light"] .history-filter-btn {
+      background: #e2e8f0;
+      border-color: #cbd5e1;
+      color: #475569;
+    }
+
+    [data-theme="light"] .history-filter-btn.active {
+      background: #0284c7;
+      color: #ffffff;
+      border-color: #0284c7;
+    }
+
+    [data-theme="light"] .history-item-card {
+      background: #f8fafc;
+      border-color: #e2e8f0;
+    }
+
+    [data-theme="light"] .history-item-card:hover {
+      background: #ffffff;
+      border-color: #0284c7;
+      box-shadow: 0 6px 18px rgba(2, 132, 199, 0.12);
+    }
+
+    [data-theme="light"] .history-calc-title {
+      color: #475569;
+    }
+
+    [data-theme="light"] .history-calc-result {
+      color: #0f172a;
+    }
+
+    [data-theme="light"] .history-card-actions {
+      border-top-color: #e2e8f0;
+    }
+
+    [data-theme="light"] .btn-copy-history {
+      border-color: #cbd5e1;
+      color: #64748b;
+    }
+
+    [data-theme="light"] .btn-copy-history:hover {
+      color: #0f172a;
+      border-color: #94a3b8;
+    }
+
+    [data-theme="light"] .history-empty-title {
+      color: #334155;
     }
 
     [data-theme="light"] input[type="date"],
@@ -1414,9 +1857,15 @@
       .app-container {
         padding: 20px 14px;
       }
-      .btn-theme-toggle {
+      .brand-header {
+        padding-right: 84px;
+      }
+      .top-actions-group {
         top: 15px;
         right: 15px;
+        gap: 6px;
+      }
+      .btn-action-icon {
         width: 34px;
         height: 34px;
       }
@@ -1983,23 +2432,35 @@
   </div>
 
   <main class="app-container" role="main">
-    <!-- Selettore Tema Chiaro / Scuro -->
-    <button type="button" class="btn-theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Cambia tema chiaro o scuro" title="Passa a tema chiaro/scuro">
-      <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <circle cx="12" cy="12" r="5"></circle>
-        <line x1="12" y1="1" x2="12" y2="3"></line>
-        <line x1="12" y1="21" x2="12" y2="23"></line>
-        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-        <line x1="1" y1="12" x2="3" y2="12"></line>
-        <line x1="21" y1="12" x2="23" y2="12"></line>
-        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-      </svg>
-      <svg class="theme-icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-      </svg>
-    </button>
+    <!-- Azioni Top: Cronologia Calcoli Recenti & Tema Chiaro/Scuro -->
+    <div class="top-actions-group">
+      <!-- Pulsante Cronologia -->
+      <button type="button" class="btn-action-icon" id="historyToggleBtn" onclick="toggleHistoryDrawer()" aria-label="Cronologia Calcoli Recenti" title="Cronologia dei Calcoli Recenti">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <polyline points="12 6 12 12 16 14"></polyline>
+        </svg>
+        <span class="history-badge" id="historyBadge">0</span>
+      </button>
+
+      <!-- Selettore Tema Chiaro / Scuro -->
+      <button type="button" class="btn-action-icon btn-theme-toggle" id="themeToggleBtn" onclick="toggleTheme()" aria-label="Cambia tema chiaro o scuro" title="Passa a tema chiaro/scuro">
+        <svg class="theme-icon-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="5"></circle>
+          <line x1="12" y1="1" x2="12" y2="3"></line>
+          <line x1="12" y1="21" x2="12" y2="23"></line>
+          <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+          <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+          <line x1="1" y1="12" x2="3" y2="12"></line>
+          <line x1="21" y1="12" x2="23" y2="12"></line>
+          <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+          <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+        </svg>
+        <svg class="theme-icon-moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+        </svg>
+      </button>
+    </div>
 
     <header class="brand-header">
       <div class="brand-main-row">
@@ -2336,12 +2797,288 @@
     </footer>
   </main>
 
+  <!-- Modal / Drawer Cronologia Calcoli Recenti -->
+  <div id="historyOverlay" class="history-overlay" onclick="closeHistoryDrawer(event)" role="dialog" aria-modal="true" aria-label="Cronologia Calcoli Recenti">
+    <aside class="history-drawer" onclick="event.stopPropagation()">
+      <div class="history-drawer-header">
+        <div class="history-title-group">
+          <div class="history-title">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            <span>Cronologia Calcoli</span>
+          </div>
+          <span class="history-subtitle">I tuoi ultimi calcoli salvati automaticamente</span>
+        </div>
+        <div class="history-header-actions">
+          <button type="button" class="btn-clear-history" onclick="clearAllHistory()" title="Cancella tutta la cronologia" aria-label="Cancella cronologia">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+            <span>Svuota</span>
+          </button>
+          <button type="button" class="btn-close-drawer" onclick="closeHistoryDrawer()" title="Chiudi cronologia" aria-label="Chiudi">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Filtri per Scheda -->
+      <div class="history-filter-bar">
+        <button type="button" class="history-filter-btn active" data-filter="all" onclick="filterHistory('all')">Tutti</button>
+        <button type="button" class="history-filter-btn" data-filter="calc" onclick="filterHistory('calc')">Aggiungi / Sottrai</button>
+        <button type="button" class="history-filter-btn" data-filter="diff" onclick="filterHistory('diff')">Differenza</button>
+        <button type="button" class="history-filter-btn" data-filter="age" onclick="filterHistory('age')">Età</button>
+      </div>
+
+      <!-- Elenco Elementi Cronologia -->
+      <div id="historyListContainer" class="history-list-container">
+        <!-- Generato dinamicamente -->
+      </div>
+    </aside>
+  </div>
+
   <div id="toast" class="toast" role="status" aria-live="polite">
     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><polyline points="20 6 9 17 4 12"></polyline></svg>
     <span id="toastMsg">Testo copiato!</span>
   </div>
 
   <script>
+    // ========================================================
+    // MODULO CRONOLOGIA DEI CALCOLI RECENTI (Offline LocalStorage)
+    // ========================================================
+    const HISTORY_STORAGE_KEY = 'datemaster_calc_history';
+    const MAX_HISTORY_ITEMS = 30;
+    let currentHistoryFilter = 'all';
+    let historyDebounceTimer = null;
+    let isAppReadyForHistory = false;
+
+    function formatLocalDateToDisplay(d) {
+      if (!d) return '';
+      return `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`;
+    }
+
+    function getHistory() {
+      try {
+        const raw = localStorage.getItem(HISTORY_STORAGE_KEY);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) {
+        return [];
+      }
+    }
+
+    function saveHistory(list) {
+      try {
+        localStorage.setItem(HISTORY_STORAGE_KEY, JSON.stringify(list.slice(0, MAX_HISTORY_ITEMS)));
+      } catch (e) {}
+      updateHistoryBadge();
+    }
+
+    function addHistoryItem(item) {
+      const list = getHistory();
+      if (list.length > 0) {
+        const top = list[0];
+        if (top.tab === item.tab && top.title === item.title && top.result === item.result) {
+          return;
+        }
+      }
+      item.id = Date.now() + Math.random().toString(36).substring(2, 6);
+      item.timestamp = Date.now();
+      list.unshift(item);
+      saveHistory(list);
+      if (document.getElementById('historyOverlay')?.classList.contains('open')) {
+        renderHistoryList(currentHistoryFilter);
+      }
+    }
+
+    function recordCalculationHistory(tab, title, subtitle, result, params) {
+      if (!isAppReadyForHistory) return;
+      clearTimeout(historyDebounceTimer);
+      historyDebounceTimer = setTimeout(() => {
+        addHistoryItem({
+          tab,
+          title,
+          subtitle: subtitle || '',
+          result,
+          params
+        });
+      }, 1000);
+    }
+
+    function updateHistoryBadge() {
+      const list = getHistory();
+      const badge = document.getElementById('historyBadge');
+      if (!badge) return;
+      if (list.length > 0) {
+        badge.innerText = list.length > 99 ? '99+' : list.length;
+        badge.style.display = 'flex';
+      } else {
+        badge.style.display = 'none';
+      }
+    }
+
+    function toggleHistoryDrawer() {
+      const overlay = document.getElementById('historyOverlay');
+      if (!overlay) return;
+      const isOpen = overlay.classList.contains('open');
+      if (isOpen) {
+        closeHistoryDrawer();
+      } else {
+        overlay.classList.add('open');
+        renderHistoryList(currentHistoryFilter);
+      }
+    }
+
+    function closeHistoryDrawer(e) {
+      if (e && e.target && e.target.id !== 'historyOverlay') return;
+      const overlay = document.getElementById('historyOverlay');
+      if (overlay) overlay.classList.remove('open');
+    }
+
+    function filterHistory(filter) {
+      currentHistoryFilter = filter;
+      document.querySelectorAll('.history-filter-btn').forEach(btn => {
+        btn.classList.toggle('active', btn.getAttribute('data-filter') === filter);
+      });
+      renderHistoryList(filter);
+    }
+
+    function formatHistoryTime(ts) {
+      if (!ts) return '';
+      const diffSec = Math.floor((Date.now() - ts) / 1000);
+      if (diffSec < 50) return 'Poco fa';
+      if (diffSec < 3600) return `${Math.floor(diffSec / 60)} min fa`;
+      if (diffSec < 86400) return `${Math.floor(diffSec / 3600)} ore fa`;
+      const d = new Date(ts);
+      return `${d.getDate()}/${d.getMonth() + 1} ${String(d.getHours()).padStart(2, '0')}:${String(d.getMinutes()).padStart(2, '0')}`;
+    }
+
+    function renderHistoryList(filter = 'all') {
+      const container = document.getElementById('historyListContainer');
+      if (!container) return;
+      let list = getHistory();
+
+      if (filter !== 'all') {
+        list = list.filter(item => item.tab === filter);
+      }
+
+      if (list.length === 0) {
+        container.innerHTML = `
+          <div class="history-empty-state">
+            <div class="history-empty-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            </div>
+            <div class="history-empty-title">Nessun calcolo ${filter !== 'all' ? 'in questa categoria' : 'recente'}</div>
+            <div class="history-empty-desc">I tuoi calcoli compariranno qui automaticamente pronti da ripristinare o copiare con un click.</div>
+          </div>
+        `;
+        return;
+      }
+
+      const tabLabels = {
+        calc: { label: 'Aggiungi / Sottrai', class: 'tag-calc' },
+        diff: { label: 'Differenza', class: 'tag-diff' },
+        age: { label: 'Età & Milestone', class: 'tag-age' }
+      };
+
+      container.innerHTML = list.map(item => {
+        const tabInfo = tabLabels[item.tab] || { label: 'Calcolo', class: 'tag-calc' };
+        const timeStr = formatHistoryTime(item.timestamp);
+        return `
+          <div class="history-item-card" data-id="${item.id}">
+            <div class="history-card-top">
+              <span class="history-tag ${tabInfo.class}">${tabInfo.label}</span>
+              <span class="history-time">${timeStr}</span>
+              <button type="button" class="btn-delete-single-history" onclick="deleteHistoryItem('${item.id}', event)" title="Elimina questo calcolo" aria-label="Elimina">✕</button>
+            </div>
+            <div class="history-card-body">
+              <div class="history-calc-title">${item.title}</div>
+              <div class="history-calc-result">↳ ${item.result}</div>
+            </div>
+            <div class="history-card-actions">
+              <button type="button" class="btn-restore-calc" onclick="restoreHistoryItem('${item.id}')">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M8 16H3v5"/></svg>
+                <span>Ripristina</span>
+              </button>
+              <button type="button" class="btn-copy-history" onclick="copyHistoryText('${item.id}', event)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
+                <span>Copia</span>
+              </button>
+            </div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function clearAllHistory() {
+      if (!confirm('Vuoi davvero svuotare tutta la cronologia dei calcoli recenti?')) return;
+      localStorage.removeItem(HISTORY_STORAGE_KEY);
+      updateHistoryBadge();
+      renderHistoryList(currentHistoryFilter);
+      showToast('Cronologia calcoli svuotata');
+    }
+
+    function deleteHistoryItem(id, event) {
+      if (event) event.stopPropagation();
+      let list = getHistory();
+      list = list.filter(item => item.id !== id);
+      saveHistory(list);
+      renderHistoryList(currentHistoryFilter);
+    }
+
+    function copyHistoryText(id, event) {
+      if (event) event.stopPropagation();
+      const list = getHistory();
+      const item = list.find(it => it.id === id);
+      if (!item) return;
+      const textToCopy = `[Data Master Pro] ${item.title} ➔ Risultato: ${item.result}`;
+      navigator.clipboard.writeText(textToCopy).then(() => {
+        showToast('Calcolo copiato negli appunti!');
+      }).catch(() => {
+        showToast('Errore durante la copia');
+      });
+    }
+
+    function restoreHistoryItem(id) {
+      const list = getHistory();
+      const item = list.find(it => it.id === id);
+      if (!item || !item.params) return;
+
+      if (item.tab === 'calc') {
+        switchTab('calc');
+        const p = item.params;
+        if (p.startVal) document.getElementById('startDate').value = p.startVal;
+        if (p.days !== undefined) document.getElementById('daysToAdd').value = p.days;
+        if (p.months !== undefined) document.getElementById('monthsToAdd').value = p.months;
+        if (p.years !== undefined) document.getElementById('yearsToAdd').value = p.years;
+        if (p.isWorkdays !== undefined) {
+          const wEl = document.getElementById('workdaysOnly');
+          wEl.checked = p.isWorkdays;
+          toggleWorkdaysMode();
+        }
+        if (p.isInclusive !== undefined) {
+          document.getElementById('inclusiveDates').checked = p.isInclusive;
+        }
+        calculateDate(p.direction || 1);
+      } else if (item.tab === 'diff') {
+        switchTab('diff');
+        const p = item.params;
+        if (p.date1) document.getElementById('diffDate1').value = p.date1;
+        if (p.date2) document.getElementById('diffDate2').value = p.date2;
+        if (p.isInclusive !== undefined) document.getElementById('diffInclusiveDates').checked = p.isInclusive;
+        calculateDifference();
+      } else if (item.tab === 'age') {
+        switchTab('age');
+        const p = item.params;
+        if (p.birthDate) document.getElementById('birthDate').value = p.birthDate;
+        if (p.refDate) document.getElementById('ageRefDate').value = p.refDate;
+        calculateAge();
+      }
+
+      closeHistoryDrawer();
+      showToast('Calcolo ripristinato con successo!');
+    }
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') closeHistoryDrawer();
+    });
+
     // --- Gestione Date Sicura (Evita problemi di Fuso Orario UTC) ---
     function formatLocalDateToISO(date) {
       const y = date.getFullYear();
@@ -3017,6 +3754,29 @@
       document.getElementById('calcPills').innerHTML = pillsHtml;
       renderHolidaysDetail('calcHolidaysDetail', holidaysInInterval);
       document.getElementById('calcResultBox').style.display = 'block';
+
+      // Registra nella Cronologia Recenti se l'app è pronta
+      if (typeof recordCalculationHistory === 'function') {
+        const startVal = document.getElementById('startDate').value;
+        const rawDays = Math.abs(parseInt(document.getElementById('daysToAdd').value) || 0);
+        const months = Math.abs(parseInt(document.getElementById('monthsToAdd').value) || 0);
+        const years = Math.abs(parseInt(document.getElementById('yearsToAdd').value) || 0);
+        const isInc = document.getElementById('inclusiveDates').checked;
+
+        let intervalParts = [];
+        if (rawDays > 0) intervalParts.push(`${rawDays} gg${isWorkdaysMode ? ' feriali' : ''}`);
+        if (months > 0) intervalParts.push(`${months} mesi`);
+        if (years > 0) intervalParts.push(`${years} anni`);
+        const intervalDesc = intervalParts.length > 0 ? intervalParts.join(', ') : '0 giorni';
+
+        recordCalculationHistory(
+          'calc',
+          `${formatLocalDateToDisplay(baseDate)} ${direction > 0 ? '+' : '-'} ${intervalDesc}`,
+          isWorkdaysMode ? 'Solo feriali (salta festività)' : 'Giorni solari',
+          formatted,
+          { startVal, days: rawDays, months, years, direction, isWorkdays: isWorkdaysMode, isInclusive: isInc }
+        );
+      }
     }
 
     // --- Calcolo Differenza Esatta di Calendario (Anni, Mesi, Giorni reali) ---
@@ -3120,6 +3880,18 @@
       document.getElementById('diffPills').innerHTML = pillsHtml;
       renderHolidaysDetail('diffHolidaysDetail', holidaysInInterval);
       document.getElementById('diffResultBox').style.display = 'block';
+
+      // Registra nella Cronologia Recenti se l'app è pronta
+      if (typeof recordCalculationHistory === 'function') {
+        const resText = `${displayDays} ${displayDays === 1 ? 'giorno' : 'giorni'} (${exactBreakdown})`;
+        recordCalculationHistory(
+          'diff',
+          `Da ${formatLocalDateToDisplay(earlier)} a ${formatLocalDateToDisplay(later)}`,
+          `${isInclusive ? 'Estremi compresi' : 'Distanza netta'} • ${workingIncl.count} gg lavorativi`,
+          resText,
+          { date1: d1Val, date2: d2Val, isInclusive }
+        );
+      }
     }
 
     // --- TAB 3: CALCOLO ETÀ & MILESTONES ---
@@ -3262,6 +4034,17 @@
       `;
 
       document.getElementById('ageResultBox').style.display = 'block';
+
+      // Registra nella Cronologia Recenti se l'app è pronta
+      if (typeof recordCalculationHistory === 'function') {
+        recordCalculationHistory(
+          'age',
+          `Nascita: ${formatLocalDateToDisplay(birthDate)} (rif: ${formatLocalDateToDisplay(refDate)})`,
+          `Nato di ${weekdayBirth} • ${zodiac.emoji} ${zodiac.name}`,
+          exactStr,
+          { birthDate: birthVal, refDate: refVal }
+        );
+      }
     }
 
     // Copia risultato negli appunti con feedback toast
@@ -3474,10 +4257,16 @@
 
     // Inizializzazione rapida
     initTheme();
+    updateHistoryBadge();
     renderQuickTags(false);
     calculateDate(1);
     calculateDifference();
     calculateAge();
+
+    // Abilita il salvataggio nella cronologia dopo l'avvio iniziale
+    setTimeout(() => {
+      isAppReadyForHistory = true;
+    }, 1200);
 
     // Avvio Splash Screen all'apertura della pagina
     if (document.readyState === 'complete' || document.readyState === 'interactive') {
